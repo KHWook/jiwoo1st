@@ -44,10 +44,47 @@
     text-align: center; padding-top: 48px;
   }
   .hero .eyebrow { font-size: 14px; letter-spacing: .2em; color: var(--muted); }
+  .hero .num-wrap { position: relative; margin: 40px 0 8px; cursor: pointer; -webkit-tap-highlight-color: transparent; }
   .hero .num {
     font-size: 160px; line-height: 1; font-weight: 700; color: var(--accent);
-    margin: 16px 0 8px; font-family: Georgia, "Times New Roman", serif;
+    font-family: Georgia, "Times New Roman", serif; user-select: none;
   }
+  /* 촛불 */
+  .candle {
+    position: absolute; left: 50%; top: -34px; transform: translateX(-50%);
+    width: 10px; height: 36px;
+    background: repeating-linear-gradient(-45deg, #fff 0 4px, var(--c1) 4px 8px);
+    border-radius: 3px 3px 0 0;
+  }
+  .candle::before { /* 심지 */
+    content: ""; position: absolute; left: 50%; top: -6px; width: 2px; height: 7px;
+    background: #3b302a; transform: translateX(-50%);
+  }
+  .flame {
+    position: absolute; left: 50%; top: -26px; width: 14px; height: 22px;
+    background: radial-gradient(ellipse at 50% 70%, #fff6c2 0%, #ffb52e 45%, #ff6a00 75%, transparent 100%);
+    border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+    transform-origin: 50% 100%;
+    transform: translateX(-50%);
+    animation: flicker .5s ease-in-out infinite alternate;
+    transition: opacity .25s, transform .25s;
+  }
+  @keyframes flicker {
+    from { transform: translateX(-50%) scale(1, 1) rotate(-3deg); }
+    to   { transform: translateX(-50%) scale(.9, 1.1) rotate(3deg); }
+  }
+  .smoke {
+    position: absolute; left: 50%; top: -20px; width: 6px; height: 6px;
+    border-radius: 50%; background: rgba(120,120,120,.5); opacity: 0; pointer-events: none;
+  }
+  .num-wrap.out .flame { opacity: 0; transform: translateX(-50%) scale(.2, .2); animation: none; }
+  .num-wrap.out .smoke { animation: rise 1.4s ease-out forwards; }
+  @keyframes rise {
+    0%   { opacity: .8; transform: translate(-50%, 0) scale(1); }
+    100% { opacity: 0;  transform: translate(-40%, -60px) scale(3); }
+  }
+  .hero .hint { font-size: 12px; color: var(--muted); margin-top: 4px; }
+  #confetti { position: fixed; inset: 0; pointer-events: none; z-index: 90; }
   .hero .name { font-size: 28px; font-weight: 600; }
   .hero .sub { margin-top: 8px; color: var(--muted); }
   .hero .date { margin-top: 32px; font-size: 15px; }
@@ -131,7 +168,11 @@
 <main>
   <section class="hero">
     <p class="eyebrow">FIRST BIRTHDAY</p>
-    <div class="num" id="heroNum">1</div>
+    <div class="num-wrap" id="numWrap" role="button" tabindex="0" aria-label="촛불 끄기">
+      <div class="candle"><div class="flame"></div><div class="smoke"></div></div>
+      <div class="num">1</div>
+    </div>
+    <p class="hint" id="hint">촛불을 탭해서 꺼주세요</p>
     <p class="name" id="heroName"></p>
     <p class="sub" id="heroSub"></p>
     <p class="date" id="heroDate"></p>
@@ -171,6 +212,7 @@
 
   <footer id="footer"></footer>
 </main>
+<canvas id="confetti"></canvas>
 <div class="toast" id="toast"></div>
 
 <script>
@@ -304,6 +346,69 @@ function showToast(msg) {
     });
   }, { threshold: 0.35 });
   io.observe(grid);
+})();
+
+/* ---------- 촛불 + 색종이 (canvas, 외부 라이브러리 없음) ---------- */
+(function candle() {
+  const wrap = document.getElementById("numWrap");
+  const hint = document.getElementById("hint");
+  const canvas = document.getElementById("confetti");
+  const ctx = canvas.getContext("2d");
+  const reduced = matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const COLORS = ["#e63946", "#f4a261", "#f6d55c", "#2a9d8f", "#457b9d", "#ffffff"];
+  let pieces = [], raf = null, dpr = 1;
+
+  function resize() {
+    dpr = Math.min(2, window.devicePixelRatio || 1);
+    canvas.width = innerWidth * dpr; canvas.height = innerHeight * dpr;
+    canvas.style.width = innerWidth + "px"; canvas.style.height = innerHeight + "px";
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  }
+
+  function burst(x, y) {
+    const n = 90;
+    for (let i = 0; i < n; i++) {
+      const a = (Math.PI * 2 * i) / n + Math.random() * .3;
+      const v = 4 + Math.random() * 7;
+      pieces.push({
+        x, y, vx: Math.cos(a) * v, vy: Math.sin(a) * v - 4,
+        w: 6 + Math.random() * 6, h: 4 + Math.random() * 4,
+        rot: Math.random() * Math.PI, vr: (Math.random() - .5) * .3,
+        color: COLORS[i % COLORS.length], life: 1,
+      });
+    }
+    if (!raf) raf = requestAnimationFrame(tick);
+  }
+
+  function tick() {
+    ctx.clearRect(0, 0, innerWidth, innerHeight);
+    pieces = pieces.filter((p) => p.life > 0 && p.y < innerHeight + 20);
+    for (const p of pieces) {
+      p.vy += .18; p.vx *= .99; p.x += p.vx; p.y += p.vy; p.rot += p.vr; p.life -= .006;
+      ctx.save();
+      ctx.translate(p.x, p.y); ctx.rotate(p.rot);
+      ctx.globalAlpha = Math.max(0, Math.min(1, p.life * 1.5));
+      ctx.fillStyle = p.color;
+      ctx.fillRect(-p.w / 2, -p.h / 2, p.w, p.h);
+      ctx.restore();
+    }
+    raf = pieces.length ? requestAnimationFrame(tick) : (ctx.clearRect(0, 0, innerWidth, innerHeight), null);
+  }
+
+  function toggle() {
+    const out = wrap.classList.toggle("out");
+    wrap.setAttribute("aria-label", out ? "촛불 켜기" : "촛불 끄기");
+    hint.textContent = out ? `생일 축하해, ${CONFIG.baby.name}야 🎉` : "촛불을 탭해서 꺼주세요";
+    if (out && !reduced) {
+      const r = wrap.querySelector(".candle").getBoundingClientRect();
+      burst(r.left + r.width / 2, r.top);
+    }
+  }
+
+  resize();
+  window.addEventListener("resize", resize, { passive: true });
+  wrap.addEventListener("click", toggle);
+  wrap.addEventListener("keydown", (e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); toggle(); } });
 })();
 </script>
 </body>
