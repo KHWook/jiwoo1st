@@ -58,7 +58,7 @@ Resources:
         GetRsvp:       { Type: HttpApi, Properties: { ApiId: !Ref Api, Path: /rsvp,      Method: GET } }
         PostGuestbook: { Type: HttpApi, Properties: { ApiId: !Ref Api, Path: /guestbook, Method: POST } }
         GetGuestbook:  { Type: HttpApi, Properties: { ApiId: !Ref Api, Path: /guestbook, Method: GET } }
-        DelGuestbook:  { Type: HttpApi, Properties: { ApiId: !Ref Api, Path: /guestbook/{id}, Method: DELETE } }
+        DelGuestbook:  { Type: HttpApi, Properties: { ApiId: !Ref Api, Path: "/guestbook/{id}", Method: DELETE } }
 
 Outputs:
   ApiUrl:
