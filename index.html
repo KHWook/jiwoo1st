@@ -169,6 +169,39 @@
     background: var(--accent); color: #fff; font-size: 15px; font-family: var(--sans); font-weight: 500;
   }
 
+  /* 참석 여부 / 방명록 */
+  .form { display: grid; gap: 12px; }
+  .form input[type=text], .form textarea, .form select {
+    width: 100%; padding: 12px 14px; font: inherit; font-size: 15px; color: var(--ink);
+    background: var(--paper); border: 1px solid var(--line); border-radius: 12px; outline: none;
+  }
+  .form textarea { min-height: 88px; resize: vertical; }
+  .form input:focus, .form textarea:focus, .form select:focus { border-color: var(--accent); }
+  .seg { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .seg label {
+    display: block; text-align: center; padding: 12px; border-radius: 12px; font-size: 14px;
+    background: var(--paper); border: 1px solid var(--line); cursor: pointer;
+  }
+  .seg input { display: none; }
+  .seg input:checked + span { color: var(--accent); font-weight: 500; }
+  .seg label:has(input:checked) { border-color: var(--accent); background: var(--accent-soft); }
+  .row { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .row label { font-size: 13px; color: var(--muted); display: grid; gap: 4px; }
+  .hp { position: absolute; left: -9999px; }
+  .submit {
+    padding: 14px; border-radius: 12px; border: 0; background: var(--accent); color: #fff;
+    font: inherit; font-size: 15px; font-weight: 500;
+  }
+  .submit:disabled { opacity: .5; }
+  .form-done { text-align: center; padding: 24px; background: var(--sage-soft); border-radius: 12px; color: var(--sage); font-weight: 500; }
+  .gb-list { list-style: none; display: grid; gap: 10px; margin-top: 28px; }
+  .gb-list li { background: var(--paper); border: 1px solid var(--line); border-radius: 12px; padding: 14px 16px; font-size: 14px; }
+  .gb-list b { font-weight: 500; }
+  .gb-list time { float: right; font-size: 12px; color: var(--muted); }
+  .gb-list p { text-align: left; margin-top: 4px; white-space: pre-wrap; }
+  .gb-empty { text-align: center; color: var(--muted); font-size: 14px; margin-top: 20px; }
+  .hidden { display: none !important; }
+
   footer { text-align: center; padding: 40px 24px 72px; color: var(--muted); font-size: 12px; }
   .toast {
     position: fixed; left: 50%; bottom: 32px; transform: translateX(-50%) translateY(20px);
@@ -238,6 +271,44 @@
     <ul class="notice-list" id="notices"></ul>
   </section>
 
+  <section class="rsvp" id="rsvpSection">
+    <h2>RSVP</h2>
+    <p class="h2-sub">참석 여부를 알려주세요</p>
+    <p class="muted" style="margin-bottom:24px">식사 준비를 위해 참석 여부를 미리 알려주시면 감사하겠습니다.</p>
+    <form class="form" id="rsvpForm" autocomplete="off">
+      <input type="text" name="name" placeholder="성함" maxlength="30" required>
+      <div class="seg">
+        <label><input type="radio" name="attending" value="yes" checked><span>참석할게요</span></label>
+        <label><input type="radio" name="attending" value="no"><span>참석이 어려워요</span></label>
+      </div>
+      <div class="row">
+        <label>동반 인원 (본인 포함)
+          <select name="count"><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option></select>
+        </label>
+        <label>식사 여부
+          <select name="meal"><option value="yes">식사해요</option><option value="no">식사 안 해요</option></select>
+        </label>
+      </div>
+      <textarea name="note" placeholder="전하실 말씀이 있다면 적어주세요 (선택)" maxlength="200"></textarea>
+      <input class="hp" type="text" name="website" tabindex="-1" aria-hidden="true">
+      <button class="submit" type="submit">전송하기</button>
+    </form>
+    <div class="form-done hidden" id="rsvpDone">전달되었습니다. 감사합니다 🙏</div>
+  </section>
+
+  <section class="guestbook" id="guestbookSection">
+    <h2>GUESTBOOK</h2>
+    <p class="h2-sub">축하의 한마디</p>
+    <form class="form" id="gbForm" autocomplete="off">
+      <input type="text" name="name" placeholder="이름" maxlength="20" required>
+      <textarea name="message" placeholder="지우에게 축하 메시지를 남겨주세요" maxlength="200" required></textarea>
+      <input class="hp" type="text" name="website" tabindex="-1" aria-hidden="true">
+      <button class="submit" type="submit">남기기</button>
+    </form>
+    <ul class="gb-list" id="gbList"></ul>
+    <p class="gb-empty hidden" id="gbEmpty">첫 번째 축하 메시지를 남겨주세요</p>
+  </section>
+
   <section class="contact">
     <h2>CONTACT</h2>
     <p class="h2-sub">연락하기</p>
@@ -299,6 +370,10 @@ const CONFIG = {
     title: "지우의 첫 번째 생일에 초대합니다",
     text: "2026년 10월 25일 일요일 오후 12시 · 롯데시티호텔 구로",
     url: "https://khwook.github.io/jiwoo1st/",
+  },
+  api: {
+    // infra/deploy.sh 실행 후 출력되는 API URL. 비워두면 RSVP/방명록 섹션은 숨겨집니다.
+    baseUrl: "",
   },
   footer: "지우의 첫 번째 생일",
 };
@@ -468,6 +543,61 @@ const CONFIG = {
     try { await navigator.clipboard.writeText(data.url); showToast("링크가 복사되었습니다"); }
     catch { showToast("복사에 실패했습니다"); }
   });
+})();
+
+/* ---------- RSVP + 방명록 (AWS API) ---------- */
+(function api() {
+  const base = (CONFIG.api.baseUrl || "").replace(/\/$/, "");
+  const rsvpSec = document.getElementById("rsvpSection");
+  const gbSec = document.getElementById("guestbookSection");
+  if (!base) { rsvpSec.classList.add("hidden"); gbSec.classList.add("hidden"); return; }
+
+  const post = async (path, data) => {
+    const r = await fetch(base + path, { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify(data) });
+    if (!r.ok) throw new Error(r.status);
+    return r.json();
+  };
+  const formData = (f) => Object.fromEntries(new FormData(f).entries());
+  const esc = (t) => t.replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+
+  // RSVP
+  const rsvpForm = document.getElementById("rsvpForm");
+  rsvpForm.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const btn = rsvpForm.querySelector(".submit"); btn.disabled = true;
+    try {
+      await post("/rsvp", formData(rsvpForm));
+      rsvpForm.classList.add("hidden");
+      document.getElementById("rsvpDone").classList.remove("hidden");
+      try { localStorage.setItem("rsvpDone", "1"); } catch {}
+    } catch { showToast("전송에 실패했습니다. 잠시 후 다시 시도해주세요"); btn.disabled = false; }
+  });
+  try { if (localStorage.getItem("rsvpDone")) { rsvpForm.classList.add("hidden"); document.getElementById("rsvpDone").classList.remove("hidden"); } } catch {}
+
+  // 방명록
+  const gbForm = document.getElementById("gbForm");
+  const gbList = document.getElementById("gbList");
+  const gbEmpty = document.getElementById("gbEmpty");
+  const fmt = (iso) => { const d = new Date(iso); return `${d.getMonth() + 1}.${d.getDate()}`; };
+  function renderList(items) {
+    gbList.innerHTML = items.map((it) =>
+      `<li><b>${esc(it.name)}</b><time>${fmt(it.createdAt)}</time><p>${esc(it.message)}</p></li>`).join("");
+    gbEmpty.classList.toggle("hidden", items.length > 0);
+  }
+  async function load() {
+    try { const r = await fetch(base + "/guestbook"); renderList((await r.json()).items || []); }
+    catch { gbEmpty.textContent = "방명록을 불러오지 못했습니다"; gbEmpty.classList.remove("hidden"); }
+  }
+  gbForm.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const btn = gbForm.querySelector(".submit"); btn.disabled = true;
+    try { await post("/guestbook", formData(gbForm)); gbForm.reset(); showToast("메시지를 남겼습니다"); await load(); }
+    catch { showToast("전송에 실패했습니다"); }
+    btn.disabled = false;
+  });
+  // 화면에 들어올 때 한 번만 불러오기
+  const io = new IntersectionObserver((en) => { if (en[0].isIntersecting) { io.disconnect(); load(); } }, { rootMargin: "200px" });
+  io.observe(gbSec);
 })();
 function showToast(msg) {
   const t = document.getElementById("toast");

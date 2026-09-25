@@ -1,0 +1,67 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Transform: AWS::Serverless-2016-10-31
+Description: jiwoo1st invitation API (RSVP + guestbook)
+
+Parameters:
+  AllowedOrigin:
+    Type: String
+    Default: https://khwook.github.io
+  AdminKey:
+    Type: String
+    NoEcho: true
+    Description: 관리용 조회/삭제에 필요한 비밀 키
+
+Globals:
+  Function:
+    Runtime: nodejs22.x
+    Architectures: [arm64]
+    Timeout: 10
+    MemorySize: 256
+
+Resources:
+  Table:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      BillingMode: PAY_PER_REQUEST
+      AttributeDefinitions:
+        - { AttributeName: pk, AttributeType: S }
+        - { AttributeName: sk, AttributeType: S }
+      KeySchema:
+        - { AttributeName: pk, KeyType: HASH }
+        - { AttributeName: sk, KeyType: RANGE }
+
+  Api:
+    Type: AWS::Serverless::HttpApi
+    Properties:
+      CorsConfiguration:
+        AllowOrigins: [!Ref AllowedOrigin, "http://localhost:8000"]
+        AllowMethods: [GET, POST, DELETE, OPTIONS]
+        AllowHeaders: [content-type, x-admin-key]
+        MaxAge: 3600
+      DefaultRouteSettings:
+        ThrottlingBurstLimit: 20
+        ThrottlingRateLimit: 10
+
+  Fn:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: src/
+      Handler: index.handler
+      Environment:
+        Variables:
+          TABLE: !Ref Table
+          ADMIN_KEY: !Ref AdminKey
+      Policies:
+        - DynamoDBCrudPolicy: { TableName: !Ref Table }
+      Events:
+        PostRsvp:      { Type: HttpApi, Properties: { ApiId: !Ref Api, Path: /rsvp,      Method: POST } }
+        GetRsvp:       { Type: HttpApi, Properties: { ApiId: !Ref Api, Path: /rsvp,      Method: GET } }
+        PostGuestbook: { Type: HttpApi, Properties: { ApiId: !Ref Api, Path: /guestbook, Method: POST } }
+        GetGuestbook:  { Type: HttpApi, Properties: { ApiId: !Ref Api, Path: /guestbook, Method: GET } }
+        DelGuestbook:  { Type: HttpApi, Properties: { ApiId: !Ref Api, Path: /guestbook/{id}, Method: DELETE } }
+
+Outputs:
+  ApiUrl:
+    Value: !Sub "https://${Api}.execute-api.${AWS::Region}.amazonaws.com"
+  TableName:
+    Value: !Ref Table
