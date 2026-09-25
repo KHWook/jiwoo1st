@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>지우의 첫 번째 생일에 초대합니다</title>
+<meta property="og:title" content="지우의 첫 번째 생일에 초대합니다">
+<meta property="og:description" content="지우의 돌잔치에 소중한 분들을 모십니다">
+<meta property="og:image" content="images/og.jpg">
+<style>
+  :root {
+    --bg: #fdf8f2;
+    --paper: #ffffff;
+    --ink: #3b302a;
+    --muted: #8a7b72;
+    --accent: #d9727a;
+    --line: #eadfd5;
+    /* 색동 */
+    --c1: #e63946; --c2: #f4a261; --c3: #f6d55c; --c4: #2a9d8f; --c5: #457b9d;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { -webkit-text-size-adjust: 100%; }
+  body {
+    font-family: "Apple SD Gothic Neo", "Noto Sans KR", -apple-system, system-ui, sans-serif;
+    background: var(--bg);
+    color: var(--ink);
+    line-height: 1.7;
+    word-break: keep-all;
+  }
+  main { max-width: 480px; margin: 0 auto; }
+  section { padding: 64px 24px; }
+  section + section { border-top: 1px solid var(--line); }
+  h2 {
+    font-size: 13px; letter-spacing: .3em; font-weight: 500;
+    color: var(--accent); text-align: center; margin-bottom: 24px;
+  }
+  p { text-align: center; }
+  .muted { color: var(--muted); font-size: 14px; }
+
+  /* 히어로 */
+  .hero {
+    min-height: 100svh;
+    display: flex; flex-direction: column; justify-content: center; align-items: center;
+    text-align: center; padding-top: 48px;
+  }
+  .hero .eyebrow { font-size: 14px; letter-spacing: .2em; color: var(--muted); }
+  .hero .num {
+    font-size: 160px; line-height: 1; font-weight: 700; color: var(--accent);
+    margin: 16px 0 8px; font-family: Georgia, "Times New Roman", serif;
+  }
+  .hero .name { font-size: 28px; font-weight: 600; }
+  .hero .sub { margin-top: 8px; color: var(--muted); }
+  .hero .date { margin-top: 32px; font-size: 15px; }
+
+  /* 인사말 */
+  .greeting p + p { margin-top: 16px; }
+  .parents { margin-top: 32px; font-size: 15px; }
+
+  /* 일시/장소 */
+  .info dl { display: grid; grid-template-columns: 64px 1fr; gap: 12px 16px; font-size: 15px; }
+  .info dt { color: var(--muted); }
+  .info dd a { color: var(--accent); }
+  .btn {
+    display: block; margin: 24px auto 0; padding: 12px 20px; width: fit-content;
+    border: 1px solid var(--accent); border-radius: 999px; color: var(--accent);
+    text-decoration: none; font-size: 14px; background: var(--paper);
+  }
+
+  /* 갤러리 */
+  .gallery-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .gallery-grid img {
+    width: 100%; aspect-ratio: 1; object-fit: cover; display: block;
+    border-radius: 8px; background: var(--line);
+  }
+
+  /* 연락처 / 계좌 */
+  .contact-list, .account-list { list-style: none; display: grid; gap: 12px; }
+  .contact-list li, .account-list li {
+    background: var(--paper); border: 1px solid var(--line); border-radius: 12px;
+    padding: 14px 16px; font-size: 14px;
+    display: flex; justify-content: space-between; align-items: center; gap: 12px;
+  }
+  .contact-list a { color: var(--accent); text-decoration: none; }
+  .account-list small { display: block; color: var(--muted); }
+  .copy-btn {
+    border: 1px solid var(--line); background: var(--bg); border-radius: 8px;
+    padding: 6px 10px; font-size: 12px; color: var(--ink); white-space: nowrap;
+  }
+
+  footer { text-align: center; padding: 40px 24px 64px; color: var(--muted); font-size: 12px; }
+  .toast {
+    position: fixed; left: 50%; bottom: 32px; transform: translateX(-50%) translateY(20px);
+    background: rgba(59,48,42,.9); color: #fff; padding: 10px 16px; border-radius: 999px;
+    font-size: 13px; opacity: 0; transition: opacity .25s, transform .25s; pointer-events: none;
+  }
+  .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+</style>
+</head>
+<body>
+<main>
+  <section class="hero">
+    <p class="eyebrow">FIRST BIRTHDAY</p>
+    <div class="num" id="heroNum">1</div>
+    <p class="name" id="heroName"></p>
+    <p class="sub" id="heroSub"></p>
+    <p class="date" id="heroDate"></p>
+  </section>
+
+  <section class="greeting">
+    <h2>INVITATION</h2>
+    <div id="greeting"></div>
+    <p class="parents" id="parents"></p>
+  </section>
+
+  <section class="info">
+    <h2>일시 · 장소</h2>
+    <dl>
+      <dt>일시</dt><dd id="infoDate"></dd>
+      <dt>장소</dt><dd id="infoPlace"></dd>
+      <dt>주소</dt><dd id="infoAddress"></dd>
+    </dl>
+    <a class="btn" id="mapLink" target="_blank" rel="noopener">지도 보기</a>
+  </section>
+
+  <section class="gallery">
+    <h2>GALLERY</h2>
+    <div class="gallery-grid" id="gallery"></div>
+  </section>
+
+  <section class="contact">
+    <h2>연락하기</h2>
+    <ul class="contact-list" id="contacts"></ul>
+  </section>
+
+  <section class="account">
+    <h2>마음 전하실 곳</h2>
+    <p class="muted" style="margin-bottom:20px">참석이 어려우신 분들을 위해 계좌번호를 안내드립니다.</p>
+    <ul class="account-list" id="accounts"></ul>
+  </section>
+
+  <footer id="footer"></footer>
+</main>
+<div class="toast" id="toast"></div>
+
+<script>
+/* =========================================================
+   내용 수정은 여기 CONFIG만 고치면 됩니다.
+   ========================================================= */
+const CONFIG = {
+  baby: {
+    name: "지우",
+    fullName: "김지우",
+    birth: "2025년 10월 12일",
+  },
+  event: {
+    date: "2026년 10월 17일 토요일",
+    time: "오후 12시 30분",
+    place: "OO컨벤션 3층 그랜드홀",
+    address: "서울특별시 OO구 OO로 123",
+    mapUrl: "https://map.naver.com/",
+  },
+  greeting: [
+    "지우가 태어나 처음 맞는 생일입니다.",
+    "지난 일 년, 사랑으로 지켜봐 주신 분들께 감사한 마음을 전하고자 작은 자리를 마련했습니다.",
+    "오셔서 지우의 첫걸음을 함께 축복해 주세요.",
+  ],
+  parents: { father: "김아빠", mother: "이엄마" },
+  gallery: [
+    "images/01.svg", "images/02.svg", "images/03.svg",
+    "images/04.svg", "images/05.svg", "images/06.svg",
+  ],
+  contacts: [
+    { label: "아빠 김아빠", phone: "010-0000-0000" },
+    { label: "엄마 이엄마", phone: "010-0000-0000" },
+  ],
+  accounts: [
+    { label: "아빠 김아빠", bank: "OO은행", number: "000-0000-0000" },
+    { label: "엄마 이엄마", bank: "OO은행", number: "000-0000-0000" },
+  ],
+  footer: "지우의 첫 번째 생일",
+};
+
+/* ---------- 렌더링 ---------- */
+(function render() {
+  const $ = (id) => document.getElementById(id);
+  const { baby, event, parents } = CONFIG;
+
+  $("heroName").textContent = `${baby.name}의 첫 번째 생일`;
+  $("heroSub").textContent = `${baby.fullName} · ${baby.birth}생`;
+  $("heroDate").textContent = `${event.date} ${event.time}`;
+
+  $("greeting").innerHTML = CONFIG.greeting.map((t) => `<p>${t}</p>`).join("");
+  $("parents").textContent = `아빠 ${parents.father} · 엄마 ${parents.mother}`;
+
+  $("infoDate").textContent = `${event.date} ${event.time}`;
+  $("infoPlace").textContent = event.place;
+  $("infoAddress").textContent = event.address;
+  $("mapLink").href = event.mapUrl;
+
+  $("gallery").innerHTML = CONFIG.gallery
+    .map((src, i) => `<img src="${src}" alt="${baby.name} 사진 ${i + 1}" loading="lazy">`)
+    .join("");
+
+  $("contacts").innerHTML = CONFIG.contacts
+    .map((c) => `<li><span>${c.label}</span><a href="tel:${c.phone}">${c.phone}</a></li>`)
+    .join("");
+
+  $("accounts").innerHTML = CONFIG.accounts
+    .map((a) => `<li><div>${a.label}<small>${a.bank} ${a.number}</small></div>
+      <button class="copy-btn" data-copy="${a.bank} ${a.number}">복사</button></li>`)
+    .join("");
+
+  $("footer").textContent = CONFIG.footer;
+})();
+
+/* ---------- 계좌 복사 ---------- */
+document.addEventListener("click", async (e) => {
+  const btn = e.target.closest("[data-copy]");
+  if (!btn) return;
+  try {
+    await navigator.clipboard.writeText(btn.dataset.copy);
+    showToast("복사되었습니다");
+  } catch {
+    showToast("복사에 실패했습니다");
+  }
+});
+function showToast(msg) {
+  const t = document.getElementById("toast");
+  t.textContent = msg;
+  t.classList.add("show");
+  clearTimeout(showToast._t);
+  showToast._t = setTimeout(() => t.classList.remove("show"), 1600);
+}
+</script>
+</body>
+</html>
