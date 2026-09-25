@@ -94,9 +94,28 @@
     font-size: 13px; opacity: 0; transition: opacity .25s, transform .25s; pointer-events: none;
   }
   .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+  /* 색동 진행률 바 */
+  .progress {
+    position: fixed; top: 0; left: 0; right: 0; height: 6px; z-index: 100;
+    background: var(--line);
+  }
+  .progress-bar {
+    height: 100%; width: 100%;
+    background: repeating-linear-gradient(90deg,
+      var(--c1) 0 20%, var(--c2) 20% 40%, var(--c3) 40% 60%, var(--c4) 60% 80%, var(--c5) 80% 100%);
+    background-size: 120px 100%;
+    transform-origin: left center;
+    transform: scaleX(0);
+    will-change: transform;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { animation: none !important; transition: none !important; }
+  }
 </style>
 </head>
 <body>
+<div class="progress" aria-hidden="true"><div class="progress-bar" id="progressBar"></div></div>
 <main>
   <section class="hero">
     <p class="eyebrow">FIRST BIRTHDAY</p>
@@ -231,6 +250,27 @@ function showToast(msg) {
   clearTimeout(showToast._t);
   showToast._t = setTimeout(() => t.classList.remove("show"), 1600);
 }
+
+/* ---------- 스크롤 진행률 바 (rAF로 묶음) ---------- */
+(function progress() {
+  const bar = document.getElementById("progressBar");
+  const doc = document.documentElement;
+  let ticking = false;
+  function update() {
+    const max = doc.scrollHeight - window.innerHeight;
+    const ratio = max > 0 ? Math.min(1, Math.max(0, window.scrollY / max)) : 1;
+    bar.style.transform = `scaleX(${ratio})`;
+    ticking = false;
+  }
+  function onScroll() {
+    if (ticking) return;
+    ticking = true;
+    requestAnimationFrame(update);
+  }
+  window.addEventListener("scroll", onScroll, { passive: true });
+  window.addEventListener("resize", onScroll, { passive: true });
+  update();
+})();
 </script>
 </body>
 </html>
