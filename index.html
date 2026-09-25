@@ -5,67 +5,78 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>지우의 첫 번째 생일에 초대합니다</title>
 <meta property="og:title" content="지우의 첫 번째 생일에 초대합니다">
-<meta property="og:description" content="지우의 돌잔치에 소중한 분들을 모십니다">
-<meta property="og:image" content="images/og.jpg">
+<meta property="og:description" content="2026년 10월 25일 일요일 오후 12시 · 롯데시티호텔 구로">
+<meta property="og:image" content="https://khwook.github.io/jiwoo1st/images/og.png">
+<meta property="og:type" content="website">
+<!-- 유일한 외부 리소스: Google Fonts. 폰 기종별 시스템 폰트 편차를 없애기 위해 사용. -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Gowun+Batang:wght@400;700&family=Noto+Sans+KR:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
   :root {
-    --bg: #fdf8f2;
+    /* 어스톤 팔레트: 크림 바탕 + 테라코타 포인트 + 세이지 보조 */
+    --bg: #fbf6ef;
     --paper: #ffffff;
     --ink: #3b302a;
-    --muted: #8a7b72;
-    --accent: #d9727a;
+    --muted: #8f8078;
+    --accent: #c96a4a;
+    --accent-soft: #f3e1d6;
+    --sage: #7a9e7e;
+    --sage-soft: #e6eee6;
     --line: #eadfd5;
     /* 색동 */
     --c1: #e63946; --c2: #f4a261; --c3: #f6d55c; --c4: #2a9d8f; --c5: #457b9d;
+    --serif: "Gowun Batang", Georgia, "Times New Roman", serif;
+    --sans: "Noto Sans KR", "Apple SD Gothic Neo", -apple-system, system-ui, sans-serif;
   }
   * { box-sizing: border-box; margin: 0; padding: 0; }
   html { -webkit-text-size-adjust: 100%; }
   body {
-    font-family: "Apple SD Gothic Neo", "Noto Sans KR", -apple-system, system-ui, sans-serif;
-    background: var(--bg);
-    color: var(--ink);
-    line-height: 1.7;
-    word-break: keep-all;
+    font-family: var(--sans); font-weight: 300;
+    background: var(--bg); color: var(--ink);
+    line-height: 1.8; word-break: keep-all;
   }
   main { max-width: 480px; margin: 0 auto; }
-  section { padding: 64px 24px; }
+  section { padding: 72px 24px; }
   section + section { border-top: 1px solid var(--line); }
   h2 {
-    font-size: 13px; letter-spacing: .3em; font-weight: 500;
-    color: var(--accent); text-align: center; margin-bottom: 24px;
+    font-size: 12px; letter-spacing: .32em; font-weight: 500;
+    color: var(--accent); text-align: center; margin-bottom: 8px;
   }
+  .h2-sub { text-align: center; font-family: var(--serif); font-size: 22px; margin-bottom: 32px; }
   p { text-align: center; }
   .muted { color: var(--muted); font-size: 14px; }
 
+  /* 색동 진행률 바 */
+  .progress { position: fixed; top: 0; left: 0; right: 0; height: 6px; z-index: 100; background: var(--line); }
+  .progress-bar {
+    height: 100%; width: 100%;
+    background: repeating-linear-gradient(90deg,
+      var(--c1) 0 20%, var(--c2) 20% 40%, var(--c3) 40% 60%, var(--c4) 60% 80%, var(--c5) 80% 100%);
+    background-size: 120px 100%;
+    transform-origin: left center; transform: scaleX(0); will-change: transform;
+  }
+
   /* 히어로 */
-  .hero {
-    min-height: 100svh;
-    display: flex; flex-direction: column; justify-content: center; align-items: center;
-    text-align: center; padding-top: 48px;
-  }
-  .hero .eyebrow { font-size: 14px; letter-spacing: .2em; color: var(--muted); }
-  .hero .num-wrap { position: relative; margin: 32px 0 8px; cursor: pointer; -webkit-tap-highlight-color: transparent; }
+  .hero { text-align: center; padding-top: 72px; }
+  .hero .eyebrow { font-size: 12px; letter-spacing: .32em; color: var(--muted); }
+  .hero .num-wrap { position: relative; margin: 28px auto 4px; width: fit-content; cursor: pointer; -webkit-tap-highlight-color: transparent; }
   .hero .num {
-    font-size: 160px; line-height: 1; font-weight: 700; color: var(--accent);
-    font-family: Georgia, "Times New Roman", serif; user-select: none;
+    font-size: 150px; line-height: 1; font-weight: 700; color: var(--accent);
+    font-family: var(--serif); user-select: none;
   }
-  /* 촛불 */
   .candle {
-    position: absolute; left: 50%; top: -2px; transform: translateX(-50%);
+    position: absolute; left: 50%; top: 2px; transform: translateX(-50%);
     width: 10px; height: 36px;
     background: repeating-linear-gradient(-45deg, #fff 0 4px, var(--c1) 4px 8px);
     border-radius: 3px 3px 0 0;
   }
-  .candle::before { /* 심지 */
-    content: ""; position: absolute; left: 50%; top: -6px; width: 2px; height: 7px;
-    background: #3b302a; transform: translateX(-50%);
-  }
+  .candle::before { content: ""; position: absolute; left: 50%; top: -6px; width: 2px; height: 7px; background: #3b302a; transform: translateX(-50%); }
   .flame {
     position: absolute; left: 50%; top: -26px; width: 14px; height: 22px;
     background: radial-gradient(ellipse at 50% 70%, #fff6c2 0%, #ffb52e 45%, #ff6a00 75%, transparent 100%);
     border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
-    transform-origin: 50% 100%;
-    transform: translateX(-50%);
+    transform-origin: 50% 100%; transform: translateX(-50%);
     animation: flicker .5s ease-in-out infinite alternate;
     transition: opacity .25s, transform .25s;
   }
@@ -73,54 +84,74 @@
     from { transform: translateX(-50%) scale(1, 1) rotate(-3deg); }
     to   { transform: translateX(-50%) scale(.9, 1.1) rotate(3deg); }
   }
-  .smoke {
-    position: absolute; left: 50%; top: -20px; width: 6px; height: 6px;
-    border-radius: 50%; background: rgba(120,120,120,.5); opacity: 0; pointer-events: none;
-  }
+  .smoke { position: absolute; left: 50%; top: -20px; width: 6px; height: 6px; border-radius: 50%; background: rgba(120,120,120,.5); opacity: 0; pointer-events: none; }
   .num-wrap.out .flame { opacity: 0; transform: translateX(-50%) scale(.2, .2); animation: none; }
   .num-wrap.out .smoke { animation: rise 1.4s ease-out forwards; }
   @keyframes rise {
     0%   { opacity: .8; transform: translate(-50%, 0) scale(1); }
     100% { opacity: 0;  transform: translate(-40%, -60px) scale(3); }
   }
-  .hero .hint { font-size: 12px; color: var(--muted); margin-top: 4px; }
+  .hero .hint { font-size: 12px; color: var(--muted); }
+  .hero .name { font-family: var(--serif); font-size: 30px; font-weight: 700; margin-top: 12px; }
+  .hero .sub { margin-top: 4px; color: var(--muted); font-size: 14px; }
+  .hero-photo {
+    display: block; width: 100%; aspect-ratio: 4 / 5; object-fit: cover;
+    border-radius: 16px; margin: 32px 0 24px; background: var(--line);
+    box-shadow: 0 12px 32px rgba(59,48,42,.12);
+  }
+  .hero .date { font-size: 15px; }
   #confetti { position: fixed; inset: 0; pointer-events: none; z-index: 90; }
-  .hero .name { font-size: 28px; font-weight: 600; }
-  .hero .sub { margin-top: 8px; color: var(--muted); }
-  .hero .date { margin-top: 32px; font-size: 15px; }
 
   /* 인사말 */
   .greeting p + p { margin-top: 16px; }
-  .parents { margin-top: 32px; font-size: 15px; }
+  .greeting .quote { font-family: var(--serif); font-size: 17px; }
+  .parents { margin-top: 36px; font-size: 15px; }
 
-  /* 일시/장소 */
-  .info dl { display: grid; grid-template-columns: 64px 1fr; gap: 12px 16px; font-size: 15px; }
-  .info dt { color: var(--muted); }
-  .info dd a { color: var(--accent); }
-  .btn {
-    display: block; margin: 24px auto 0; padding: 12px 20px; width: fit-content;
-    border: 1px solid var(--accent); border-radius: 999px; color: var(--accent);
-    text-decoration: none; font-size: 14px; background: var(--paper);
+  /* D-day 달력 */
+  .calendar { max-width: 320px; margin: 0 auto; }
+  .cal-month { text-align: center; font-family: var(--serif); font-size: 20px; margin-bottom: 16px; }
+  .cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px 0; text-align: center; font-size: 14px; }
+  .cal-grid .dow { color: var(--muted); font-size: 12px; margin-bottom: 4px; }
+  .cal-grid .dow.sun, .cal-grid .d.sun { color: var(--accent); }
+  .cal-grid .d { height: 36px; line-height: 36px; }
+  .cal-grid .d.event {
+    position: relative; color: #fff; font-weight: 500;
   }
+  .cal-grid .d.event::before {
+    content: ""; position: absolute; inset: 2px 50% 2px 50%; width: 32px; height: 32px;
+    margin-left: -16px; border-radius: 50%; background: var(--accent); z-index: -1;
+  }
+  .cal-grid .d.event { z-index: 0; }
+  .dday { text-align: center; margin-top: 28px; }
+  .dday strong { font-family: var(--serif); font-size: 32px; color: var(--accent); display: block; line-height: 1.2; }
+  .dday span { font-size: 14px; color: var(--muted); }
 
   /* 갤러리 */
   .gallery-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
   .polaroid {
     background: var(--paper); padding: 8px 8px 28px; border-radius: 4px;
     box-shadow: 0 6px 18px rgba(59,48,42,.12);
-    /* 흩어진 초기 상태: --dx/--dy/--rot 은 JS가 CSS 변수로 부여 */
     transform: translate(var(--dx), var(--dy)) rotate(var(--rot));
     opacity: .85;
     transition: transform .8s cubic-bezier(.22,1,.36,1), opacity .8s ease;
     will-change: transform, opacity;
   }
-  .polaroid img {
-    width: 100%; aspect-ratio: 1; object-fit: cover; display: block; background: var(--line);
-  }
+  .polaroid img { width: 100%; aspect-ratio: 1; object-fit: cover; display: block; background: var(--line); }
   .gallery-grid.settled .polaroid { transform: none; opacity: 1; }
-  @media (prefers-reduced-motion: reduce) {
-    .polaroid { transform: none; opacity: 1; }
+
+  /* 일시/장소 */
+  .info dl { display: grid; grid-template-columns: 56px 1fr; gap: 12px 16px; font-size: 15px; }
+  .info dt { color: var(--muted); }
+  .map-btns { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 28px; }
+  .map-btns a {
+    display: block; padding: 12px 0; text-align: center; font-size: 13px; text-decoration: none;
+    color: var(--ink); background: var(--paper); border: 1px solid var(--line); border-radius: 12px;
   }
+
+  /* 안내사항 */
+  .notice-list { list-style: none; display: grid; gap: 12px; }
+  .notice-list li { background: var(--paper); border: 1px solid var(--line); border-radius: 12px; padding: 16px; font-size: 14px; }
+  .notice-list b { display: block; font-weight: 500; color: var(--accent); margin-bottom: 4px; }
 
   /* 연락처 */
   .contact-list { list-style: none; display: grid; gap: 12px; }
@@ -131,24 +162,24 @@
   }
   .contact-list a { color: var(--accent); text-decoration: none; }
 
-  footer { text-align: center; padding: 40px 24px 64px; color: var(--muted); font-size: 12px; }
+  /* 공유 */
+  .share { text-align: center; }
+  .share-btn {
+    display: inline-block; padding: 14px 28px; border-radius: 999px; border: 0;
+    background: var(--accent); color: #fff; font-size: 15px; font-family: var(--sans); font-weight: 500;
+  }
 
-  /* 색동 진행률 바 */
-  .progress {
-    position: fixed; top: 0; left: 0; right: 0; height: 6px; z-index: 100;
-    background: var(--line);
+  footer { text-align: center; padding: 40px 24px 72px; color: var(--muted); font-size: 12px; }
+  .toast {
+    position: fixed; left: 50%; bottom: 32px; transform: translateX(-50%) translateY(20px);
+    background: rgba(59,48,42,.9); color: #fff; padding: 10px 16px; border-radius: 999px;
+    font-size: 13px; opacity: 0; transition: opacity .25s, transform .25s; pointer-events: none; z-index: 110;
   }
-  .progress-bar {
-    height: 100%; width: 100%;
-    background: repeating-linear-gradient(90deg,
-      var(--c1) 0 20%, var(--c2) 20% 40%, var(--c3) 40% 60%, var(--c4) 60% 80%, var(--c5) 80% 100%);
-    background-size: 120px 100%;
-    transform-origin: left center;
-    transform: scaleX(0);
-    will-change: transform;
-  }
+  .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
   @media (prefers-reduced-motion: reduce) {
     *, *::before, *::after { animation: none !important; transition: none !important; }
+    .polaroid { transform: none; opacity: 1; }
   }
 </style>
 </head>
@@ -164,39 +195,63 @@
     <p class="hint" id="hint">촛불을 탭해서 꺼주세요</p>
     <p class="name" id="heroName"></p>
     <p class="sub" id="heroSub"></p>
+    <img class="hero-photo" id="heroPhoto" alt="">
     <p class="date" id="heroDate"></p>
   </section>
 
   <section class="greeting">
     <h2>INVITATION</h2>
+    <p class="h2-sub">소중한 분들을 초대합니다</p>
     <div id="greeting"></div>
     <p class="parents" id="parents"></p>
   </section>
 
+  <section class="dday-section">
+    <h2>D-DAY</h2>
+    <p class="h2-sub" id="calTitle"></p>
+    <div class="calendar">
+      <div class="cal-grid" id="calGrid"></div>
+    </div>
+    <div class="dday"><strong id="ddayNum"></strong><span id="ddayText"></span></div>
+  </section>
+
+  <section class="gallery">
+    <h2>GALLERY</h2>
+    <p class="h2-sub">지우의 첫 일 년</p>
+    <div class="gallery-grid" id="gallery"></div>
+  </section>
+
   <section class="info">
-    <h2>일시 · 장소</h2>
+    <h2>LOCATION</h2>
+    <p class="h2-sub">오시는 길</p>
     <dl>
       <dt>일시</dt><dd id="infoDate"></dd>
       <dt>장소</dt><dd id="infoPlace"></dd>
       <dt>주소</dt><dd id="infoAddress"></dd>
     </dl>
-    <a class="btn" id="mapLink" target="_blank" rel="noopener">지도 보기</a>
+    <div class="map-btns" id="mapBtns"></div>
   </section>
 
-  <section class="gallery">
-    <h2>GALLERY</h2>
-    <div class="gallery-grid" id="gallery"></div>
+  <section class="notice">
+    <h2>NOTICE</h2>
+    <p class="h2-sub">안내사항</p>
+    <ul class="notice-list" id="notices"></ul>
   </section>
 
   <section class="contact">
-    <h2>연락하기</h2>
+    <h2>CONTACT</h2>
+    <p class="h2-sub">연락하기</p>
     <ul class="contact-list" id="contacts"></ul>
   </section>
 
+  <section class="share">
+    <button class="share-btn" id="shareBtn">초대장 공유하기</button>
+  </section>
 
   <footer id="footer"></footer>
 </main>
 <canvas id="confetti"></canvas>
+<div class="toast" id="toast"></div>
 
 <script>
 /* =========================================================
@@ -209,12 +264,18 @@ const CONFIG = {
     birth: "2025년 10월 29일",
   },
   event: {
+    iso: "2026-10-25T12:00:00+09:00",   // D-day 계산용 (달력도 이 값으로 그림)
     date: "2026년 10월 25일 일요일",
     time: "오후 12시",
     place: "롯데시티호텔 구로",
     address: "서울특별시 구로구 디지털로 300",
-    mapUrl: "https://map.naver.com/p/search/롯데시티호텔구로",
   },
+  maps: [
+    { label: "네이버 지도", url: "https://map.naver.com/p/search/롯데시티호텔구로" },
+    { label: "카카오맵",   url: "https://map.kakao.com/link/search/롯데시티호텔구로" },
+    { label: "티맵",       url: "tmap://search?name=롯데시티호텔구로" },
+  ],
+  heroPhoto: "images/main.svg",
   greeting: [
     "지우가 태어나 처음 맞는 생일입니다.",
     "지난 일 년, 사랑으로 지켜봐 주신 분들께 감사한 마음을 전하고자 작은 자리를 마련했습니다.",
@@ -225,10 +286,20 @@ const CONFIG = {
     "images/01.svg", "images/02.svg", "images/03.svg",
     "images/04.svg", "images/05.svg", "images/06.svg",
   ],
+  notices: [
+    { title: "주차 안내", body: "호텔 주차장을 이용하실 수 있습니다. 주차 시간은 추후 안내드리겠습니다." },
+    { title: "식사 안내", body: "행사 후 식사가 준비되어 있습니다." },
+    { title: "복장 안내", body: "편안한 복장으로 오셔도 좋습니다." },
+  ],
   contacts: [
     { label: "아빠 강현욱", phone: "010-3590-8448" },
     { label: "엄마 박은지", phone: "010-4643-4307" },
   ],
+  share: {
+    title: "지우의 첫 번째 생일에 초대합니다",
+    text: "2026년 10월 25일 일요일 오후 12시 · 롯데시티호텔 구로",
+    url: "https://khwook.github.io/jiwoo1st/",
+  },
   footer: "지우의 첫 번째 생일",
 };
 
@@ -239,28 +310,57 @@ const CONFIG = {
 
   $("heroName").textContent = `${baby.name}의 첫 번째 생일`;
   $("heroSub").textContent = `${baby.fullName} · ${baby.birth}생`;
+  $("heroPhoto").src = CONFIG.heroPhoto;
+  $("heroPhoto").alt = `${baby.name} 사진`;
   $("heroDate").textContent = `${event.date} ${event.time}`;
 
-  $("greeting").innerHTML = CONFIG.greeting.map((t) => `<p>${t}</p>`).join("");
+  $("greeting").innerHTML = CONFIG.greeting.map((t, i) => `<p${i === 0 ? ' class="quote"' : ""}>${t}</p>`).join("");
   $("parents").textContent = `아빠 ${parents.father} · 엄마 ${parents.mother}`;
 
   $("infoDate").textContent = `${event.date} ${event.time}`;
   $("infoPlace").textContent = event.place;
   $("infoAddress").textContent = event.address;
-  $("mapLink").href = event.mapUrl;
+  $("mapBtns").innerHTML = CONFIG.maps
+    .map((m) => `<a href="${m.url}" target="_blank" rel="noopener">${m.label}</a>`).join("");
 
   $("gallery").innerHTML = CONFIG.gallery
     .map((src, i) => `<figure class="polaroid"><img src="${src}" alt="${baby.name} 사진 ${i + 1}" loading="lazy"></figure>`)
     .join("");
 
+  $("notices").innerHTML = CONFIG.notices.map((n) => `<li><b>${n.title}</b>${n.body}</li>`).join("");
+
   $("contacts").innerHTML = CONFIG.contacts
     .map((c) => `<li><span>${c.label}</span><a href="tel:${c.phone}">${c.phone}</a></li>`)
     .join("");
 
-
   $("footer").textContent = CONFIG.footer;
 })();
 
+/* ---------- D-day 달력 ---------- */
+(function calendar() {
+  const ev = new Date(CONFIG.event.iso);
+  const y = ev.getFullYear(), m = ev.getMonth(), d = ev.getDate();
+  document.getElementById("calTitle").textContent = `${y}년 ${m + 1}월`;
+
+  const dows = ["일", "월", "화", "수", "목", "금", "토"];
+  const first = new Date(y, m, 1).getDay();
+  const last = new Date(y, m + 1, 0).getDate();
+  let html = dows.map((w, i) => `<div class="dow${i === 0 ? " sun" : ""}">${w}</div>`).join("");
+  for (let i = 0; i < first; i++) html += `<div class="d"></div>`;
+  for (let day = 1; day <= last; day++) {
+    const sun = (first + day - 1) % 7 === 0;
+    html += `<div class="d${sun ? " sun" : ""}${day === d ? " event" : ""}">${day}</div>`;
+  }
+  document.getElementById("calGrid").innerHTML = html;
+
+  const today = new Date(); today.setHours(0, 0, 0, 0);
+  const target = new Date(y, m, d);
+  const diff = Math.round((target - today) / 86400000);
+  const num = document.getElementById("ddayNum"), txt = document.getElementById("ddayText");
+  if (diff > 0) { num.textContent = `D-${diff}`; txt.textContent = `${CONFIG.baby.name}의 돌잔치까지 ${diff}일 남았어요`; }
+  else if (diff === 0) { num.textContent = "D-DAY"; txt.textContent = `오늘은 ${CONFIG.baby.name}의 돌잔치 날이에요`; }
+  else { num.textContent = `D+${-diff}`; txt.textContent = `${CONFIG.baby.name}의 돌잔치가 ${-diff}일 지났어요`; }
+})();
 
 /* ---------- 스크롤 진행률 바 (rAF로 묶음) ---------- */
 (function progress() {
@@ -273,11 +373,7 @@ const CONFIG = {
     bar.style.transform = `scaleX(${ratio})`;
     ticking = false;
   }
-  function onScroll() {
-    if (ticking) return;
-    ticking = true;
-    requestAnimationFrame(update);
-  }
+  function onScroll() { if (ticking) return; ticking = true; requestAnimationFrame(update); }
   window.addEventListener("scroll", onScroll, { passive: true });
   window.addEventListener("resize", onScroll, { passive: true });
   update();
@@ -287,7 +383,6 @@ const CONFIG = {
 (function gallery() {
   const grid = document.getElementById("gallery");
   const cards = grid.querySelectorAll(".polaroid");
-  // 시드 고정 난수: 새로고침해도 같은 배치
   let seed = 7;
   const rand = () => (seed = (seed * 9301 + 49297) % 233280) / 233280;
   cards.forEach((el) => {
@@ -298,9 +393,7 @@ const CONFIG = {
   const reduced = matchMedia("(prefers-reduced-motion: reduce)").matches;
   if (reduced || !("IntersectionObserver" in window)) { grid.classList.add("settled"); return; }
   const io = new IntersectionObserver((entries) => {
-    entries.forEach((en) => {
-      if (en.isIntersecting) { grid.classList.add("settled"); io.disconnect(); }
-    });
+    entries.forEach((en) => { if (en.isIntersecting) { grid.classList.add("settled"); io.disconnect(); } });
   }, { threshold: 0.35 });
   io.observe(grid);
 })();
@@ -321,7 +414,6 @@ const CONFIG = {
     canvas.style.width = innerWidth + "px"; canvas.style.height = innerHeight + "px";
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
   }
-
   function burst(x, y) {
     const n = 90;
     for (let i = 0; i < n; i++) {
@@ -336,7 +428,6 @@ const CONFIG = {
     }
     if (!raf) raf = requestAnimationFrame(tick);
   }
-
   function tick() {
     ctx.clearRect(0, 0, innerWidth, innerHeight);
     pieces = pieces.filter((p) => p.life > 0 && p.y < innerHeight + 20);
@@ -351,7 +442,6 @@ const CONFIG = {
     }
     raf = pieces.length ? requestAnimationFrame(tick) : (ctx.clearRect(0, 0, innerWidth, innerHeight), null);
   }
-
   function toggle() {
     const out = wrap.classList.toggle("out");
     wrap.setAttribute("aria-label", out ? "촛불 켜기" : "촛불 끄기");
@@ -361,12 +451,30 @@ const CONFIG = {
       burst(r.left + r.width / 2, r.top);
     }
   }
-
   resize();
   window.addEventListener("resize", resize, { passive: true });
   wrap.addEventListener("click", toggle);
   wrap.addEventListener("keydown", (e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); toggle(); } });
 })();
+
+/* ---------- 공유: Web Share API → 없으면 링크 복사 ---------- */
+(function share() {
+  const btn = document.getElementById("shareBtn");
+  btn.addEventListener("click", async () => {
+    const data = CONFIG.share;
+    if (navigator.share) {
+      try { await navigator.share(data); return; } catch (e) { if (e.name === "AbortError") return; }
+    }
+    try { await navigator.clipboard.writeText(data.url); showToast("링크가 복사되었습니다"); }
+    catch { showToast("복사에 실패했습니다"); }
+  });
+})();
+function showToast(msg) {
+  const t = document.getElementById("toast");
+  t.textContent = msg; t.classList.add("show");
+  clearTimeout(showToast._t);
+  showToast._t = setTimeout(() => t.classList.remove("show"), 1600);
+}
 </script>
 </body>
 </html>
