@@ -67,10 +67,22 @@
   }
 
   /* 갤러리 */
-  .gallery-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-  .gallery-grid img {
-    width: 100%; aspect-ratio: 1; object-fit: cover; display: block;
-    border-radius: 8px; background: var(--line);
+  .gallery-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .polaroid {
+    background: var(--paper); padding: 8px 8px 28px; border-radius: 4px;
+    box-shadow: 0 6px 18px rgba(59,48,42,.12);
+    /* 흩어진 초기 상태: --dx/--dy/--rot 은 JS가 CSS 변수로 부여 */
+    transform: translate(var(--dx), var(--dy)) rotate(var(--rot));
+    opacity: .85;
+    transition: transform .8s cubic-bezier(.22,1,.36,1), opacity .8s ease;
+    will-change: transform, opacity;
+  }
+  .polaroid img {
+    width: 100%; aspect-ratio: 1; object-fit: cover; display: block; background: var(--line);
+  }
+  .gallery-grid.settled .polaroid { transform: none; opacity: 1; }
+  @media (prefers-reduced-motion: reduce) {
+    .polaroid { transform: none; opacity: 1; }
   }
 
   /* 연락처 / 계좌 */
@@ -217,7 +229,7 @@ const CONFIG = {
   $("mapLink").href = event.mapUrl;
 
   $("gallery").innerHTML = CONFIG.gallery
-    .map((src, i) => `<img src="${src}" alt="${baby.name} 사진 ${i + 1}" loading="lazy">`)
+    .map((src, i) => `<figure class="polaroid"><img src="${src}" alt="${baby.name} 사진 ${i + 1}" loading="lazy"></figure>`)
     .join("");
 
   $("contacts").innerHTML = CONFIG.contacts
@@ -270,6 +282,28 @@ function showToast(msg) {
   window.addEventListener("scroll", onScroll, { passive: true });
   window.addEventListener("resize", onScroll, { passive: true });
   update();
+})();
+
+/* ---------- 갤러리: 흩어진 폴라로이드 → 스크롤 시 정렬 ---------- */
+(function gallery() {
+  const grid = document.getElementById("gallery");
+  const cards = grid.querySelectorAll(".polaroid");
+  // 시드 고정 난수: 새로고침해도 같은 배치
+  let seed = 7;
+  const rand = () => (seed = (seed * 9301 + 49297) % 233280) / 233280;
+  cards.forEach((el) => {
+    el.style.setProperty("--dx", `${(rand() - .5) * 80}px`);
+    el.style.setProperty("--dy", `${(rand() - .5) * 120 + 40}px`);
+    el.style.setProperty("--rot", `${(rand() - .5) * 30}deg`);
+  });
+  const reduced = matchMedia("(prefers-reduced-motion: reduce)").matches;
+  if (reduced || !("IntersectionObserver" in window)) { grid.classList.add("settled"); return; }
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach((en) => {
+      if (en.isIntersecting) { grid.classList.add("settled"); io.disconnect(); }
+    });
+  }, { threshold: 0.35 });
+  io.observe(grid);
 })();
 </script>
 </body>
