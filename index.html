@@ -225,15 +225,6 @@
   .paws.in svg:nth-child(1) { transition-delay: 0s; } .paws.in svg:nth-child(2) { transition-delay: .15s; } .paws.in svg:nth-child(3) { transition-delay: .3s; }
   .paws.in svg:nth-child(4) { transition-delay: .45s; } .paws.in svg:nth-child(5) { transition-delay: .6s; }
 
-  /* 손글씨처럼 한 글자씩 번지며 나타남 */
-  .ink .ch {
-    display: inline-block; opacity: 0; filter: blur(3px); transform: translateY(3px) rotate(-3deg);
-    transition: opacity .35s ease, filter .45s ease, transform .4s cubic-bezier(.22,1,.36,1);
-    transition-delay: calc(var(--i) * var(--pace, 38ms) + var(--start, 0ms));
-  }
-  .ink .ch.sp { display: inline; }
-  .ink.in .ch { opacity: 1; filter: blur(0); transform: none; }
-
   /* ---------- 인사말 ---------- */
   .greeting .card {
     margin-top: 22px;
@@ -249,16 +240,16 @@
   .parents { margin-top: 28px; font-size: 15px; font-family: var(--head); color: var(--brown); }
 
   /* ---------- D-day 달력 ---------- */
-  .calendar { max-width: 320px; margin: 0 auto; background: var(--paper); border-radius: 24px; padding: 20px 16px; box-shadow: 0 10px 30px rgba(140,98,67,.08); }
-  .cal-month { text-align: center; font-family: var(--head); font-size: 20px; margin-bottom: 16px; }
-  .cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px 0; text-align: center; font-size: 14px; }
-  .cal-grid .dow { color: var(--muted); font-size: 12px; margin-bottom: 4px; font-family: var(--head); }
+  .calendar { max-width: 360px; margin: 0 auto; background: var(--paper); border-radius: 24px; padding: 22px 14px; box-shadow: 0 10px 30px rgba(140,98,67,.08); }
+  .cal-month { text-align: center; font-family: var(--head); font-size: 22px; margin-bottom: 16px; }
+  .cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px 0; text-align: center; font-size: 17px; }
+  .cal-grid .dow { color: var(--muted); font-size: 14px; margin-bottom: 6px; font-family: var(--head); }
   .cal-grid .dow.sun, .cal-grid .d.sun { color: var(--pink); }
-  .cal-grid .d { height: 36px; line-height: 36px; }
+  .cal-grid .d { height: 42px; line-height: 42px; }
   .cal-grid .d.event { position: relative; color: #fff; font-family: var(--head); z-index: 0; }
   .cal-grid .d.event::before {
-    content: ""; position: absolute; inset: 2px 50% 2px 50%; width: 32px; height: 32px;
-    margin-left: -16px; border-radius: 50%; background: var(--pink); z-index: -1;
+    content: ""; position: absolute; inset: 2px 50% 2px 50%; width: 38px; height: 38px;
+    margin-left: -19px; border-radius: 50%; background: var(--pink); z-index: -1;
     animation: pulse 1.8s ease-in-out infinite;
   }
   .cal-grid .d.event::after {
@@ -506,7 +497,7 @@
   @media (prefers-reduced-motion: reduce) {
     *, *::before, *::after { animation: none !important; transition: none !important; }
     .polaroid { transform: none; opacity: 1; }
-    .reveal, .paws svg, .stagger > *, .ink .ch { opacity: 1; transform: none; filter: none; }
+    .reveal, .paws svg, .stagger > * { opacity: 1; transform: none; }
     .float-layer { display: none; }
   }
 </style>
@@ -538,8 +529,8 @@
     <p class="h2-sub reveal" data-delay="1">소중한 분들을 초대합니다</p>
     <div class="card reveal" data-delay="2">
       <img class="otter-peek" alt="" aria-hidden="true" data-otter>
-      <div id="greeting" class="ink"></div>
-      <p class="parents ink" id="parents"></p>
+      <div id="greeting"></div>
+      <p class="parents" id="parents"></p>
     </div>
   </section>
 
@@ -793,25 +784,7 @@ const REDUCED = matchMedia("(prefers-reduced-motion: reduce)").matches;
   document.querySelectorAll(".stagger").forEach((c) => {
     [...c.children].forEach((el, i) => el.style.setProperty("--i", i));
   });
-  // 손글씨: 글자를 span으로 쪼개고 순서(--i) 부여. <br>은 유지.
-  const inks = document.querySelectorAll(".ink");
-  let inkOffset = 0;
-  inks.forEach((box) => {
-    const walk = (node) => {
-      if (node.nodeType === 3) {
-        const frag = document.createDocumentFragment();
-        for (const ch of node.textContent) {
-          const sp = document.createElement("span");
-          sp.className = "ch" + (ch === " " ? " sp" : ""); sp.textContent = ch;
-          sp.style.setProperty("--i", inkOffset++);
-          frag.appendChild(sp);
-        }
-        node.replaceWith(frag);
-      } else if (node.nodeType === 1 && node.tagName !== "BR") { [...node.childNodes].forEach(walk); }
-    };
-    [...box.childNodes].forEach(walk);
-  });
-  const els = document.querySelectorAll(".reveal, .paws, .stagger, .ink");
+  const els = document.querySelectorAll(".reveal, .paws, .stagger");
   if (REDUCED || !("IntersectionObserver" in window)) { els.forEach((e) => e.classList.add("in")); return; }
   const io = new IntersectionObserver((entries) => {
     entries.forEach((en) => {
