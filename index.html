@@ -44,7 +44,7 @@
     overflow-x: hidden;
   }
   main { max-width: 480px; margin: 0 auto; position: relative; z-index: 1; }
-  section { padding: 64px 24px; position: relative; }
+  section { padding: 64px 24px; position: relative; content-visibility: auto; contain-intrinsic-size: auto 700px; }
   h2 {
     font-family: var(--head); font-size: 13px; letter-spacing: .3em; font-weight: 400;
     color: var(--pink); text-align: center; margin-bottom: 6px;
@@ -118,11 +118,9 @@
   .progress { position: fixed; top: 0; left: 0; right: 0; height: 6px; z-index: 100; background: var(--line); }
   .progress-bar {
     height: 100%; width: 100%;
-    background: linear-gradient(90deg, var(--pink), var(--yellow), var(--blue), var(--pink));
-    background-size: 200% 100%; animation: shimmer 4s linear infinite;
+    background: linear-gradient(90deg, var(--pink), var(--yellow), var(--blue));
     transform-origin: left center; transform: scaleX(0); will-change: transform;
   }
-  @keyframes shimmer { to { background-position: 200% 0; } }
 
   /* ---------- 히어로 ---------- */
   .hero { text-align: center; padding-top: 64px; }
@@ -250,13 +248,15 @@
   .cal-grid .d.event::before {
     content: ""; position: absolute; inset: 2px 50% 2px 50%; width: 38px; height: 38px;
     margin-left: -19px; border-radius: 50%; background: var(--pink); z-index: -1;
-    animation: pulse 1.8s ease-in-out infinite;
+  }
+  .cal-grid .d.event .ring {
+    position: absolute; left: 50%; top: 50%; width: 38px; height: 38px; margin: -19px 0 0 -19px; border-radius: 50%;
+    border: 2px solid var(--pink); opacity: 0; animation: ringOut 1.8s ease-out infinite; pointer-events: none;
   }
   .cal-grid .d.event::after {
     content: "♥"; position: absolute; right: 2px; top: -10px; font-size: 12px; color: var(--pink); line-height: 1;
     animation: heartbeat 1.8s ease-in-out infinite;
   }
-  @keyframes pulse { 0%,100% { box-shadow: 0 0 0 0 rgba(245,155,176,.5); } 60% { box-shadow: 0 0 0 10px rgba(245,155,176,0); } }
   .cal-time {
     margin: 16px auto 0; width: fit-content; padding: 8px 18px; border-radius: 999px;
     background: var(--pink-soft); color: var(--brown); font-family: var(--head); font-size: 15px;
@@ -429,9 +429,9 @@
   .lightbox {
     position: fixed; inset: 0; z-index: 120; display: grid; place-items: center; padding: 24px;
     background: rgba(107,74,53,.55); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px);
-    opacity: 0; pointer-events: none; transition: opacity .25s;
+    opacity: 0; visibility: hidden; pointer-events: none; transition: opacity .25s, visibility 0s .25s;
   }
-  .lightbox.show { opacity: 1; pointer-events: auto; }
+  .lightbox.show { opacity: 1; visibility: visible; pointer-events: auto; transition: opacity .25s; }
   .lightbox img {
     max-width: 100%; max-height: 100%; border-radius: 18px; background: #fff; padding: 8px;
     box-shadow: 0 20px 50px rgba(0,0,0,.3); transform: scale(.85); transition: transform .3s cubic-bezier(.34,1.56,.64,1);
@@ -741,7 +741,7 @@ const REDUCED = matchMedia("(prefers-reduced-motion: reduce)").matches;
       <figure class="video-slide">
         <div class="video-wrap" data-video>
           <div class="frame">
-          <video playsinline preload="metadata" src="${v.src}"${v.poster ? ` poster="${v.poster}"` : ""}></video>
+          <video playsinline preload="none" src="${v.src}"${v.poster ? ` poster="${v.poster}"` : ""}></video>
           <span class="badge">${i + 1} / ${vids.length}</span>
           <div class="big-play"><span><svg viewBox="0 0 64 64" aria-hidden="true"><path d="M22 14.5c0-4 4.3-6.4 7.7-4.4l24 14.1c3.4 2 3.4 6.9 0 8.9l-24 14.1c-3.4 2-7.7-.4-7.7-4.4z" fill="#fff" stroke="#fff" stroke-width="6" stroke-linejoin="round"/><path d="M22 14.5c0-4 4.3-6.4 7.7-4.4l24 14.1c3.4 2 3.4 6.9 0 8.9l-24 14.1c-3.4 2-7.7-.4-7.7-4.4z" fill="#fff"/></svg></span></div>
           </div>
@@ -777,7 +777,7 @@ const REDUCED = matchMedia("(prefers-reduced-motion: reduce)").matches;
   if (REDUCED) return;
   const layer = document.getElementById("floatLayer");
   let html = "";
-  for (let i = 0; i < 14; i++) {
+  for (let i = 0; i < 10; i++) {
     const heart = i % 3 === 0;
     const x = Math.round(Math.random() * 100), s = heart ? 10 + Math.random() * 10 : 6 + Math.random() * 10;
     const d = 18 + Math.random() * 14, delay = -Math.random() * 32;
@@ -831,7 +831,7 @@ const REDUCED = matchMedia("(prefers-reduced-motion: reduce)").matches;
   for (let i = 0; i < first; i++) html += `<div class="d"></div>`;
   for (let day = 1; day <= last; day++) {
     const sun = (first + day - 1) % 7 === 0;
-    html += `<div class="d${sun ? " sun" : ""}${day === d ? " event" : ""}">${day}</div>`;
+    html += `<div class="d${sun ? " sun" : ""}${day === d ? " event" : ""}">${day}${day === d ? '<span class="ring"></span>' : ""}</div>`;
   }
   document.getElementById("calGrid").innerHTML = html;
   document.getElementById("calTime").innerHTML = `${m + 1}월 ${d}일 ${dows[ev.getDay()]}요일 · <b>${CONFIG.event.time}</b>`;
@@ -1124,7 +1124,10 @@ const REDUCED = matchMedia("(prefers-reduced-motion: reduce)").matches;
 /* ---------- 어디든 탭하면 작은 하트 ---------- */
 (function tapHearts() {
   if (REDUCED) return;
-  document.addEventListener("pointerdown", (e) => {
+  let t0 = 0, p0 = null;
+  document.addEventListener("pointerdown", (e) => { t0 = performance.now(); p0 = [e.clientX, e.clientY]; }, { passive: true });
+  document.addEventListener("pointerup", (e) => {
+    if (!p0 || performance.now() - t0 > 250 || Math.hypot(e.clientX - p0[0], e.clientY - p0[1]) > 10) return;  // 스크롤/드래그는 제외
     if (e.target.closest("input, textarea, select, button, a, label, .lightbox")) return;
     const h = document.createElement("span");
     h.className = "tap-heart"; h.textContent = "♥";
