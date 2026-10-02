@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>지우의 첫 번째 생일에 초대합니다</title>
 <meta property="og:title" content="지우의 첫 번째 생일에 초대합니다">
-<meta property="og:description" content="2026년 10월 25일 일요일 오후 12시 · 롯데시티호텔 구로">
+<meta property="og:description" content="2026년 10월 25일 일요일 오후 12시 · 롯데시티호텔 구로 3층 씨카페">
 <meta property="og:image" content="https://khwook.github.io/jiwoo1st/images/og.png">
 <meta property="og:type" content="website">
 <!-- 웹폰트(Jua, Gowun Dodum)는 fonts/ 에 직접 포함. 외부 서버 의존 없이 모든 폰에서 같은 글씨체로 보이게 함. -->
@@ -489,6 +489,7 @@ const CONFIG = {
     date: "2026년 10월 25일 일요일",
     time: "오후 12시",
     place: "롯데시티호텔 구로",
+    detail: "3층 씨카페",
     address: "서울특별시 구로구 디지털로 300",
   },
   maps: [
@@ -518,7 +519,7 @@ const CONFIG = {
   ],
   share: {
     title: "지우의 첫 번째 생일에 초대합니다",
-    text: "2026년 10월 25일 일요일 오후 12시 · 롯데시티호텔 구로",
+    text: "2026년 10월 25일 일요일 오후 12시 · 롯데시티호텔 구로 3층 씨카페",
     url: "https://khwook.github.io/jiwoo1st/",
   },
   api: {
@@ -546,7 +547,7 @@ const REDUCED = matchMedia("(prefers-reduced-motion: reduce)").matches;
   $("parents").textContent = `아빠 ${parents.father} · 엄마 ${parents.mother}`;
 
   $("infoDate").textContent = `${event.date} ${event.time}`;
-  $("infoPlace").textContent = event.place;
+  $("infoPlace").textContent = event.detail ? `${event.place} ${event.detail}` : event.place;
   $("infoAddress").textContent = event.address;
   $("mapBtns").innerHTML = CONFIG.maps
     .map((m) => `<a href="${m.url}" target="_blank" rel="noopener">${m.label}</a>`).join("");
