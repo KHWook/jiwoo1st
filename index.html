@@ -320,15 +320,21 @@
   @keyframes playPulse { 0%,100% { transform: scale(1); } 50% { transform: scale(1.08); } }
   .video-wrap.playing .big-play { opacity: 0; }
   .video-caption { text-align: center; font-family: var(--head); font-size: 15px; color: var(--brown); margin-top: 10px; }
+  .video-stage { position: relative; }
   .video-nav { display: flex; justify-content: center; align-items: center; gap: 18px; margin-top: 6px; }
   .video-arrow {
-    width: 30px; height: 30px; border-radius: 50%; border: 0; background: var(--pink-soft); color: var(--pink);
+    position: absolute; top: calc((100% - 44px) / 2); margin-top: -18px; z-index: 2;
+    width: 36px; height: 36px; border-radius: 50%; border: 0; background: rgba(255,255,255,.82); color: var(--pink);
+    box-shadow: 0 4px 12px rgba(140,98,67,.22); backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px);
     display: grid; place-items: center; cursor: pointer; -webkit-tap-highlight-color: transparent;
     transition: transform .15s cubic-bezier(.34,1.56,.64,1), opacity .25s;
   }
-  .video-arrow svg { width: 14px; height: 14px; }
+  .video-arrow-prev { left: 6px; }
+  .video-arrow-next { right: 6px; }
+  .video-arrow svg { width: 16px; height: 16px; }
   .video-arrow:active { transform: scale(.88); }
   .video-arrow:disabled { opacity: .3; cursor: default; }
+  .video-stage.single .video-arrow { display: none; }
   .video-count { min-width: 56px; text-align: center; font-family: var(--head); font-size: 15px; color: var(--brown); letter-spacing: .08em; }
   .video-count b { color: var(--pink); font-weight: 400; }
   .video-hint { text-align: center; font-size: 13px; color: var(--muted); margin-top: 12px; }
@@ -546,11 +552,13 @@
   <section class="video-section" id="videoSection">
     <h2 class="reveal">MOVIE</h2>
     <p class="h2-sub reveal" data-delay="1" id="videoTitle"></p>
-    <div class="video-slider reveal" data-delay="2" id="videoList"></div>
+    <div class="video-stage reveal" data-delay="2" id="videoStage">
+      <div class="video-slider" id="videoList"></div>
+      <button class="video-arrow video-arrow-prev" type="button" id="videoPrev" aria-label="이전 영상"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M10 3 5 8l5 5"/></svg></button>
+      <button class="video-arrow video-arrow-next" type="button" id="videoNext" aria-label="다음 영상"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m6 3 5 5-5 5"/></svg></button>
+    </div>
     <div class="video-nav" id="videoNav">
-      <button class="video-arrow" type="button" id="videoPrev" aria-label="이전 영상"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M10 3 5 8l5 5"/></svg></button>
       <span class="video-count" id="videoCount" aria-live="polite"></span>
-      <button class="video-arrow" type="button" id="videoNext" aria-label="다음 영상"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m6 3 5 5-5 5"/></svg></button>
     </div>
     <p class="video-hint reveal" data-delay="3" id="videoHint">옆으로 넘겨서 다른 영상도 볼 수 있어요</p>
   </section>
@@ -754,7 +762,7 @@ const REDUCED = matchMedia("(prefers-reduced-motion: reduce)").matches;
         ${v.caption ? `<figcaption class="video-caption">${v.caption}</figcaption>` : ""}
       </figure>`).join("");
     $("videoCount").innerHTML = `<b>1</b> / ${vids.length}`;
-    if (vids.length < 2) { $("videoNav").classList.add("hidden"); $("videoHint").textContent = "영상을 탭하면 재생돼요"; }
+    if (vids.length < 2) { $("videoNav").classList.add("hidden"); $("videoStage").classList.add("single"); $("videoHint").textContent = "영상을 탭하면 재생돼요"; }
   } else { $("videoSection").classList.add("hidden"); $("videoSection").previousElementSibling.classList.add("hidden"); }
 
   // 안내 아이콘: 손그림 느낌의 둥근 선 아이콘 (자동차 / 컵케이크 / 티셔츠 / 편지)
