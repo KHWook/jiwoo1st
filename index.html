@@ -93,7 +93,7 @@
     position: absolute; bottom: -40px; left: var(--x);
     font-size: var(--s); opacity: 0;
     animation: floatUp var(--d) linear infinite; animation-delay: var(--delay);
-    filter: blur(.2px);
+    will-change: transform, opacity;
   }
   .float-layer .bubble {
     width: var(--s); height: var(--s); border-radius: 50%;
@@ -173,7 +173,6 @@
   .photo-stage { position: relative; margin: 20px auto 0; width: 100%; max-width: 420px; animation: popIn 1s .35s cubic-bezier(.34,1.56,.64,1) both; }
   .hero-photo {
     display: block; width: 100%; height: auto; position: relative; z-index: 2;
-    filter: drop-shadow(0 14px 18px rgba(140,98,67,.18));
     animation: bob 4s ease-in-out infinite; will-change: transform;
   }
   @keyframes bob { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-8px); } }
@@ -830,10 +829,11 @@ const REDUCED = matchMedia("(prefers-reduced-motion: reduce)").matches;
   const hearts = document.querySelectorAll(".bg-heart");
   let ticking = false;
   function update() {
-    const y = Math.min(window.scrollY, 900);
+    ticking = false;
+    const y = window.scrollY;
+    if (y > 900) return;                      // 히어로가 지나가면 더 이상 건드리지 않음
     stage.style.translate = `0 ${y * -0.06}px`;
     hearts.forEach((h, i) => { h.style.translate = `0 ${y * (0.12 + i * 0.05)}px`; });
-    ticking = false;
   }
   window.addEventListener("scroll", () => { if (!ticking) { ticking = true; requestAnimationFrame(update); } }, { passive: true });
 })();
