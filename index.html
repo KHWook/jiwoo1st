@@ -131,9 +131,7 @@
   .orbit i {
     position: absolute; left: 0; top: 0; font-style: normal; font-size: var(--fs, 16px); line-height: 1;
     translate: -50% -50%; transform: rotate(var(--a)) translateY(calc(-1 * var(--r)));
-    animation: counterSpin var(--t, 12s) linear infinite; animation-direction: inherit;
   }
-  @keyframes counterSpin { to { rotate: -360deg; } }
   .orbit .h { color: var(--pink); } .orbit .s { color: var(--yellow); } .orbit .b { color: var(--blue); }
   .num-wrap.pop .num { animation: happyJump .6s cubic-bezier(.34,1.56,.64,1); }
   @keyframes happyJump { 0% { transform: scale(1); } 40% { transform: scale(1.15) translateY(-10px); } 100% { transform: scale(1); } }
