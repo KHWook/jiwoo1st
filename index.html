@@ -208,7 +208,6 @@
   .otter-dday { width: 72px; display: block; margin: 0 auto 6px; animation: bob 3.4s ease-in-out infinite; }
 
   .hero .name { font-family: var(--head); font-size: 28px; color: var(--brown); margin-top: 4px; animation: popIn .8s .5s cubic-bezier(.34,1.56,.64,1) both; }
-  .hero .sub { margin-top: 2px; color: var(--muted); font-size: 14px; animation: popIn .8s .6s both; }
   .hero .date {
     display: inline-block; margin-top: 18px; padding: 10px 22px; border-radius: 999px;
     background: var(--pink-soft); color: var(--brown); font-size: 15px; font-family: var(--head);
@@ -521,7 +520,6 @@
       <img class="hero-photo" id="heroPhoto" alt="">
     </div>
     <p class="name" id="heroName"></p>
-    <p class="sub" id="heroSub"></p>
     <p><span class="date" id="heroDate"></span></p>
   </section>
 
@@ -719,8 +717,7 @@ const REDUCED = matchMedia("(prefers-reduced-motion: reduce)").matches;
   const $ = (id) => document.getElementById(id);
   const { baby, event, parents } = CONFIG;
 
-  $("heroName").textContent = `${baby.name}의 첫 번째 생일`;
-  $("heroSub").textContent = `${baby.fullName} · ${baby.birth}`;
+  $("heroName").textContent = `${baby.name}의 첫번째 생일 잔치`;
   $("heroPhoto").src = CONFIG.heroPhoto;
   $("heroPhoto").alt = `${baby.name} 사진`;
   document.querySelectorAll("[data-otter]").forEach((el) => { el.src = CONFIG.character; });
