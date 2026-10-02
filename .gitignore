@@ -5,3 +5,4 @@
 .aws-sam/
 infra/node_modules/
 .claude/
+originals/
