@@ -348,16 +348,14 @@
 
   /* ---------- 안내사항 ---------- */
   .notice-list { list-style: none; display: grid; gap: 12px; }
-  .notice-list li { background: var(--paper); border-radius: 18px; padding: 16px 18px 16px 52px; font-size: 14px; position: relative; box-shadow: 0 6px 18px rgba(140,98,67,.06); }
-  .notice-list li::before {
-    content: ""; position: absolute; left: 16px; top: 18px; width: 24px; height: 24px; border-radius: 50%;
-    background: var(--blue-soft);
+  .notice-list li { background: var(--paper); border-radius: 18px; padding: 16px 18px 16px 62px; font-size: 14px; position: relative; box-shadow: 0 6px 18px rgba(140,98,67,.06); }
+  .notice-list .ico {
+    position: absolute; left: 14px; top: 14px; width: 36px; height: 36px; border-radius: 12px;
+    background: var(--pink-soft); display: grid; place-items: center;
   }
-  .notice-list li::after {
-    position: absolute; left: 20px; top: 16px; font-size: 14px;
-  }
-  .notice-list li:nth-child(1)::after { content: "🚗"; } .notice-list li:nth-child(2)::after { content: "🍰"; } .notice-list li:nth-child(3)::after { content: "👕"; }
-  .notice-list li:nth-child(n+4)::after { content: "💌"; }
+  .notice-list li:nth-child(2) .ico { background: var(--blue-soft); }
+  .notice-list li:nth-child(3) .ico { background: #fbf1d6; }
+  .notice-list .ico svg { width: 22px; height: 22px; }
   .notice-list b { display: block; font-family: var(--head); font-weight: 400; color: var(--brown); margin-bottom: 2px; }
 
   /* ---------- 연락처 ---------- */
@@ -753,7 +751,15 @@ const REDUCED = matchMedia("(prefers-reduced-motion: reduce)").matches;
     if (vids.length < 2) { $("videoNav").classList.add("hidden"); $("videoHint").textContent = "영상을 탭하면 재생돼요"; }
   } else { $("videoSection").classList.add("hidden"); $("videoSection").previousElementSibling.classList.add("hidden"); }
 
-  $("notices").innerHTML = CONFIG.notices.map((n) => `<li><b>${n.title}</b>${n.body}</li>`).join("");
+  // 안내 아이콘: 손그림 느낌의 둥근 선 아이콘 (자동차 / 컵케이크 / 티셔츠 / 편지)
+  const ICONS = {
+    car: `<svg viewBox="0 0 24 24" fill="none" stroke="#8c6243" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 13.5 5.6 9.2A2 2 0 0 1 7.5 8h9a2 2 0 0 1 1.9 1.2L20 13.5"/><rect x="3" y="13" width="18" height="5.5" rx="2.2" fill="#f59bb0" stroke="#8c6243"/><circle cx="7.5" cy="18.5" r="1.9" fill="#fff"/><circle cx="16.5" cy="18.5" r="1.9" fill="#fff"/><path d="M6.2 15.6h1.3M16.5 15.6h1.3" stroke="#fff"/></svg>`,
+    cake: `<svg viewBox="0 0 24 24" fill="none" stroke="#8c6243" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 12.5c-1-3.2 1.6-5.5 3.6-4.6C10.3 5.6 13.7 5.6 14.4 7.9c2-.9 4.6 1.4 3.6 4.6" fill="#fff"/><path d="M5.5 12.5h13l-1 7.2a1.5 1.5 0 0 1-1.5 1.3H8a1.5 1.5 0 0 1-1.5-1.3z" fill="#9fd3f4"/><path d="M9 14v4.5M12 14v4.5M15 14v4.5" stroke="#fff"/><circle cx="9.5" cy="9.8" r=".7" fill="#f59bb0" stroke="none"/><circle cx="13" cy="8.6" r=".7" fill="#f8d878" stroke="none"/><circle cx="15.5" cy="10.6" r=".7" fill="#f59bb0" stroke="none"/></svg>`,
+    shirt: `<svg viewBox="0 0 24 24" fill="none" stroke="#8c6243" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 4.5 7 5.5 3.5 8.5l2.3 3 1.7-1V19a1 1 0 0 0 1 1h7a1 1 0 0 0 1-1v-8.5l1.7 1 2.3-3L17 5.5l-2-1a3 3 0 0 1-6 0z" fill="#f8d878"/><path d="M9.5 13.5c.8-1.3 2-1.3 2.5 0 .5-1.3 1.7-1.3 2.5 0 0 1.4-1.5 2.4-2.5 3.2-1-.8-2.5-1.8-2.5-3.2z" fill="#f59bb0" stroke="none"/></svg>`,
+    mail: `<svg viewBox="0 0 24 24" fill="none" stroke="#8c6243" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="6" width="17" height="12" rx="2.5" fill="#fff"/><path d="m4.5 7.5 7.5 5.5 7.5-5.5"/><circle cx="12" cy="14.6" r="1.3" fill="#f59bb0" stroke="none"/></svg>`,
+  };
+  const pickIcon = (t) => /주차|차량|자동차/.test(t) ? "car" : /식사|음식|뷔페|케이크/.test(t) ? "cake" : /복장|드레스|옷/.test(t) ? "shirt" : "mail";
+  $("notices").innerHTML = CONFIG.notices.map((n) => `<li><span class="ico" aria-hidden="true">${ICONS[pickIcon(n.title)]}</span><b>${n.title}</b>${n.body}</li>`).join("");
 
   $("contacts").innerHTML = CONFIG.contacts
     .map((c) => `<li><span>${c.label}</span><a href="tel:${c.phone}">${c.phone}</a></li>`)
