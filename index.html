@@ -226,13 +226,6 @@
   }
   .ink .ch.sp { display: inline; }
   .ink.in .ch { opacity: 1; filter: blur(0); transform: none; }
-  .ink .pen {
-    display: inline-block; width: 2px; height: 1em; vertical-align: -0.15em; margin-left: 2px; background: var(--pink);
-    opacity: 0; animation: blink .7s steps(1) infinite;
-  }
-  .ink.in .pen { opacity: 1; transition: opacity .2s; }
-  .ink.done .pen { opacity: 0; animation: none; }
-  @keyframes blink { 50% { opacity: 0; } }
 
   /* ---------- 인사말 ---------- */
   .greeting .card {
@@ -472,7 +465,6 @@
     *, *::before, *::after { animation: none !important; transition: none !important; }
     .polaroid { transform: none; opacity: 1; }
     .reveal, .paws svg, .stagger > *, .ink .ch { opacity: 1; transform: none; filter: none; }
-    .ink .pen { display: none; }
     .float-layer { display: none; }
   }
 </style>
@@ -775,7 +767,6 @@ const REDUCED = matchMedia("(prefers-reduced-motion: reduce)").matches;
       } else if (node.nodeType === 1 && node.tagName !== "BR") { [...node.childNodes].forEach(walk); }
     };
     [...box.childNodes].forEach(walk);
-    const pen = document.createElement("span"); pen.className = "pen"; box.appendChild(pen);
   });
   const els = document.querySelectorAll(".reveal, .paws, .stagger, .ink");
   if (REDUCED || !("IntersectionObserver" in window)) { els.forEach((e) => e.classList.add("in")); return; }
@@ -783,10 +774,6 @@ const REDUCED = matchMedia("(prefers-reduced-motion: reduce)").matches;
     entries.forEach((en) => {
       if (!en.isIntersecting) return;
       en.target.classList.add("in"); io.unobserve(en.target);
-      if (en.target.classList.contains("ink")) {
-        const n = en.target.querySelectorAll(".ch").length, first = +en.target.querySelector(".ch")?.style.getPropertyValue("--i") || 0;
-        setTimeout(() => en.target.classList.add("done"), (first + n) * 38 + 600);
-      }
     });
   }, { threshold: 0.12, rootMargin: "0px 0px -30px 0px" });
   els.forEach((e) => io.observe(e));
