@@ -436,6 +436,32 @@
   footer { text-align: center; padding: 24px 24px 72px; color: var(--muted); font-size: 13px; font-family: var(--head); letter-spacing: .1em; }
   footer .mini-otter { display: block; width: 72px; margin: 0 auto 8px; animation: peek 4s ease-in-out infinite; transform-origin: 50% 100%; }
 
+  /* ---------- 사진 확대 ---------- */
+  .lightbox {
+    position: fixed; inset: 0; z-index: 120; display: grid; place-items: center; padding: 24px;
+    background: rgba(107,74,53,.55); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px);
+    opacity: 0; pointer-events: none; transition: opacity .25s;
+  }
+  .lightbox.show { opacity: 1; pointer-events: auto; }
+  .lightbox img {
+    max-width: 100%; max-height: 100%; border-radius: 18px; background: #fff; padding: 8px;
+    box-shadow: 0 20px 50px rgba(0,0,0,.3); transform: scale(.85); transition: transform .3s cubic-bezier(.34,1.56,.64,1);
+  }
+  .lightbox.show img { transform: scale(1); }
+  .lightbox .close {
+    position: absolute; top: 16px; right: 16px; width: 40px; height: 40px; border-radius: 50%; border: 0;
+    background: rgba(255,255,255,.92); color: var(--brown); font-size: 20px; line-height: 1; cursor: pointer; font-family: var(--head);
+  }
+  .lightbox .lb-nav {
+    position: absolute; top: 50%; translate: 0 -50%; width: 40px; height: 40px; border-radius: 50%; border: 0;
+    background: rgba(255,255,255,.92); color: var(--pink); display: grid; place-items: center; cursor: pointer;
+  }
+  .lightbox .lb-nav svg { width: 16px; height: 16px; }
+  .lightbox .lb-prev { left: 12px; } .lightbox .lb-next { right: 12px; }
+  .lightbox .lb-nav:disabled { opacity: .3; }
+  .lightbox .count { position: absolute; bottom: 20px; left: 50%; translate: -50% 0; color: #fff; font-family: var(--head); font-size: 13px; letter-spacing: .1em; }
+  .polaroid { cursor: zoom-in; }
+
   /* ---------- 탭 하트 ---------- */
   .tap-heart { position: fixed; pointer-events: none; z-index: 95; color: var(--pink); font-size: 20px; animation: tapHeart .9s ease-out forwards; }
   @keyframes tapHeart { 0% { opacity: 1; transform: translate(-50%, -50%) scale(.4); } 100% { opacity: 0; transform: translate(-50%, -140%) scale(1.3) rotate(var(--r)); } }
@@ -608,10 +634,16 @@
 
   <footer>
     <img class="mini-otter" alt="" aria-hidden="true" data-otter>
-    <div id="footer"></div>
   </footer>
 </main>
 <canvas id="confetti"></canvas>
+<div class="lightbox" id="lightbox" role="dialog" aria-modal="true" aria-label="사진 크게 보기">
+  <img id="lbImg" alt="">
+  <button class="lb-nav lb-prev" type="button" id="lbPrev" aria-label="이전 사진"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M10 3 5 8l5 5"/></svg></button>
+  <button class="lb-nav lb-next" type="button" id="lbNext" aria-label="다음 사진"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m6 3 5 5-5 5"/></svg></button>
+  <span class="count" id="lbCount"></span>
+  <button class="close" type="button" id="lbClose" aria-label="닫기">✕</button>
+</div>
 <button class="music-btn hidden" id="musicBtn" type="button" aria-label="배경음악 켜기" aria-pressed="false"><span class="note">♪</span></button>
 <div class="toast" id="toast"></div>
 
@@ -656,7 +688,7 @@ const CONFIG = {
   },
   gallery: ["images/01.jpg", "images/02.jpg", "images/03.jpg", "images/04.jpg"],   // 사진 갤러리. 비워두면 섹션이 숨겨집니다.
   notices: [
-    { title: "주차 안내", body: "호텔 주차장을 이용하실 수 있으며,<br>3시간 무료주차" },
+    { title: "주차 안내", body: "호텔 주차장을 이용하실 수 있으며,<br>3시간 무료주차입니다." },
     { title: "식사 안내", body: "행사 후 뷔페 식사가 준비되어 있습니다." },
     { title: "복장 안내", body: "편안한 복장으로 오셔도 좋습니다." },
   ],
@@ -673,7 +705,6 @@ const CONFIG = {
     // infra/deploy.sh 실행 후 출력되는 API URL. 비워두면 RSVP/방명록 섹션은 숨겨집니다.
     baseUrl: "https://l4si6b03ie.execute-api.ap-northeast-1.amazonaws.com",
   },
-  footer: "지우의 첫 번째 생일",
   music: {
     // 배경음악. 비워두면 버튼이 사라집니다. (Liszt - Liebestraum No.3, 오르골 편곡 / GregorQuendel, Pixabay License)
     src: "audio/bgm.m4a",
@@ -732,7 +763,6 @@ const REDUCED = matchMedia("(prefers-reduced-motion: reduce)").matches;
     .map((c) => `<li><span>${c.label}</span><a href="tel:${c.phone}">${c.phone}</a></li>`)
     .join("");
 
-  $("footer").textContent = CONFIG.footer;
 
   // 발자국 구분선
   const paw = `<svg viewBox="0 0 24 24"><ellipse cx="12" cy="15.5" rx="5.5" ry="4.5"/><circle cx="5" cy="10" r="2.3"/><circle cx="9.3" cy="6" r="2.3"/><circle cx="14.7" cy="6" r="2.3"/><circle cx="19" cy="10" r="2.3"/></svg>`;
@@ -1028,11 +1058,46 @@ const REDUCED = matchMedia("(prefers-reduced-motion: reduce)").matches;
   sync();
 })();
 
+/* ---------- 사진 확대 보기 ---------- */
+(function lightbox() {
+  const box = document.getElementById("lightbox"), img = document.getElementById("lbImg");
+  const prev = document.getElementById("lbPrev"), next = document.getElementById("lbNext"), count = document.getElementById("lbCount");
+  const list = CONFIG.gallery; if (!list.length) return;
+  let idx = 0;
+  function show(i) {
+    idx = (i + list.length) % list.length;
+    img.src = list[idx]; img.alt = `${CONFIG.baby.name} 사진 ${idx + 1}`;
+    count.textContent = `${idx + 1} / ${list.length}`;
+    prev.disabled = next.disabled = list.length < 2;
+  }
+  function open(i) { show(i); box.classList.add("show"); document.body.style.overflow = "hidden"; }
+  function close() { box.classList.remove("show"); document.body.style.overflow = ""; }
+  document.getElementById("gallery").addEventListener("click", (e) => {
+    const fig = e.target.closest(".polaroid"); if (!fig) return;
+    open([...fig.parentElement.children].indexOf(fig));
+  });
+  document.getElementById("lbClose").addEventListener("click", close);
+  box.addEventListener("click", (e) => { if (e.target === box) close(); });
+  prev.addEventListener("click", () => show(idx - 1));
+  next.addEventListener("click", () => show(idx + 1));
+  document.addEventListener("keydown", (e) => {
+    if (!box.classList.contains("show")) return;
+    if (e.key === "Escape") close(); else if (e.key === "ArrowLeft") show(idx - 1); else if (e.key === "ArrowRight") show(idx + 1);
+  });
+  // 좌우 스와이프
+  let x0 = null;
+  box.addEventListener("touchstart", (e) => { x0 = e.touches[0].clientX; }, { passive: true });
+  box.addEventListener("touchend", (e) => {
+    if (x0 === null) return; const dx = e.changedTouches[0].clientX - x0; x0 = null;
+    if (Math.abs(dx) > 40) show(idx + (dx < 0 ? 1 : -1));
+  }, { passive: true });
+})();
+
 /* ---------- 어디든 탭하면 작은 하트 ---------- */
 (function tapHearts() {
   if (REDUCED) return;
   document.addEventListener("pointerdown", (e) => {
-    if (e.target.closest("input, textarea, select, button, a, label")) return;
+    if (e.target.closest("input, textarea, select, button, a, label, .lightbox")) return;
     const h = document.createElement("span");
     h.className = "tap-heart"; h.textContent = "♥";
     h.style.left = e.clientX + "px"; h.style.top = e.clientY + "px";
