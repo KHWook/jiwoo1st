@@ -208,11 +208,6 @@
   .otter-dday { width: 72px; display: block; margin: 0 auto 6px; animation: bob 3.4s ease-in-out infinite; }
 
   .hero .name { font-family: var(--head); font-size: 28px; color: var(--brown); margin-top: 4px; animation: popIn .8s .5s cubic-bezier(.34,1.56,.64,1) both; }
-  .hero .date {
-    display: inline-block; margin-top: 18px; padding: 10px 22px; border-radius: 999px;
-    background: var(--pink-soft); color: var(--brown); font-size: 15px; font-family: var(--head);
-    animation: popIn .8s .7s cubic-bezier(.34,1.56,.64,1) both;
-  }
   @keyframes popIn { from { opacity: 0; transform: translateY(16px) scale(.9); } to { opacity: 1; transform: none; } }
   #confetti { position: fixed; inset: 0; pointer-events: none; z-index: 90; }
 
@@ -520,7 +515,6 @@
       <img class="hero-photo" id="heroPhoto" alt="">
     </div>
     <p class="name" id="heroName"></p>
-    <p><span class="date" id="heroDate"></span></p>
   </section>
 
   <div class="paws" aria-hidden="true"></div>
@@ -721,7 +715,6 @@ const REDUCED = matchMedia("(prefers-reduced-motion: reduce)").matches;
   $("heroPhoto").src = CONFIG.heroPhoto;
   $("heroPhoto").alt = `${baby.name} 사진`;
   document.querySelectorAll("[data-otter]").forEach((el) => { el.src = CONFIG.character; });
-  $("heroDate").textContent = `${event.date} ${event.time}`;
 
   $("greeting").innerHTML = CONFIG.greeting.map((t, i) => `<p${i === 0 ? ' class="quote"' : ""}>${t}</p>`).join("");
   $("parents").textContent = `아빠 ${parents.father} · 엄마 ${parents.mother}`;
@@ -1002,9 +995,17 @@ const REDUCED = matchMedia("(prefers-reduced-motion: reduce)").matches;
   function pause() { fadeTo(0, () => audio.pause()); setUI(false); }
   btn.addEventListener("click", () => { if (audio.paused) play(); else pause(); });
   document.addEventListener("bgm:duck", (e) => { if (!audio.paused) fadeTo(e.detail ? target * 0.15 : target); });
-  // 숫자 1을 처음 탭할 때 함께 시작 (자동재생 제한 때문에 사용자 제스처가 필요)
-  const once = () => { if (audio.paused) play(); };
-  document.getElementById("numWrap").addEventListener("click", once, { once: true });
+  // 첫 터치/클릭/키 입력에 바로 시작 (자동재생 제한 때문에 사용자 제스처가 필요)
+  let started = false;
+  const once = (e) => {
+    if (started) return;
+    if (e.target.closest("#musicBtn")) return;       // 버튼은 자체 핸들러가 처리
+    started = true;
+    play().then((ok) => { if (!ok) started = false; });
+    ["pointerdown", "touchstart", "keydown"].forEach((t) => document.removeEventListener(t, once, true));
+  };
+  ["pointerdown", "touchstart", "keydown"].forEach((t) => document.addEventListener(t, once, { capture: true, passive: true }));
+  btn.addEventListener("click", () => { started = true; }, { once: true });
   // 탭을 벗어나면 잠시 멈췄다가 돌아오면 이어서
   document.addEventListener("visibilitychange", () => {
     if (!btn.classList.contains("on")) return;
