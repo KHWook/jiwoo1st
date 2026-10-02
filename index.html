@@ -60,7 +60,25 @@
   /* ---------- 스크롤 등장 ---------- */
   .reveal { opacity: 0; transform: translateY(24px) scale(.98); transition: opacity .7s ease, transform .7s cubic-bezier(.22,1,.36,1); }
   .reveal.in { opacity: 1; transform: none; }
+  h2.reveal { letter-spacing: .1em; transition: opacity .7s ease, transform .7s ease, letter-spacing .9s cubic-bezier(.22,1,.36,1); }
+  h2.reveal.in { letter-spacing: .3em; }
   .reveal[data-delay="1"] { transition-delay: .1s; } .reveal[data-delay="2"] { transition-delay: .2s; } .reveal[data-delay="3"] { transition-delay: .3s; }
+
+  /* 자식 요소 순차 등장: 좌우에서 살짝 기울어져 들어와 제자리에 안착 */
+  .stagger > * {
+    opacity: 0; transform: translate(var(--sx, 0), 22px) rotate(var(--sr, 0deg)) scale(.96);
+    transition: opacity .6s ease, transform .7s cubic-bezier(.22,1,.36,1);
+    transition-delay: calc(var(--i, 0) * var(--step, 70ms));
+  }
+  .stagger > :nth-child(odd) { --sx: -16px; --sr: -2deg; }
+  .stagger > :nth-child(even) { --sx: 16px; --sr: 2deg; }
+  .stagger.in > * { opacity: 1; transform: none; }
+  .cal-grid.stagger { --step: 22ms; }
+  .cal-grid.stagger > * { --sx: 0; --sr: 0deg; transform: translateY(10px) scale(.6); }
+  .cal-grid.stagger > .d.event { transition-timing-function: cubic-bezier(.34,1.56,.64,1); }
+  .info dl.stagger { --step: 90ms; }
+  .form.stagger { --step: 80ms; }
+  .photo-stage, .bg-heart { will-change: transform; }
 
   /* ---------- 배경: 떠다니는 하트/물방울 ---------- */
   .float-layer { position: fixed; inset: 0; pointer-events: none; z-index: 0; overflow: hidden; }
@@ -199,6 +217,22 @@
   .paws.in svg { opacity: 1; transform: scale(1); }
   .paws.in svg:nth-child(1) { transition-delay: 0s; } .paws.in svg:nth-child(2) { transition-delay: .15s; } .paws.in svg:nth-child(3) { transition-delay: .3s; }
   .paws.in svg:nth-child(4) { transition-delay: .45s; } .paws.in svg:nth-child(5) { transition-delay: .6s; }
+
+  /* 손글씨처럼 한 글자씩 번지며 나타남 */
+  .ink .ch {
+    display: inline-block; opacity: 0; filter: blur(3px); transform: translateY(3px) rotate(-3deg);
+    transition: opacity .35s ease, filter .45s ease, transform .4s cubic-bezier(.22,1,.36,1);
+    transition-delay: calc(var(--i) * var(--pace, 38ms) + var(--start, 0ms));
+  }
+  .ink .ch.sp { display: inline; }
+  .ink.in .ch { opacity: 1; filter: blur(0); transform: none; }
+  .ink .pen {
+    display: inline-block; width: 2px; height: 1em; vertical-align: -0.15em; margin-left: 2px; background: var(--pink);
+    opacity: 0; animation: blink .7s steps(1) infinite;
+  }
+  .ink.in .pen { opacity: 1; transition: opacity .2s; }
+  .ink.done .pen { opacity: 0; animation: none; }
+  @keyframes blink { 50% { opacity: 0; } }
 
   /* ---------- 인사말 ---------- */
   .greeting .card {
@@ -366,7 +400,8 @@
   @media (prefers-reduced-motion: reduce) {
     *, *::before, *::after { animation: none !important; transition: none !important; }
     .polaroid { transform: none; opacity: 1; }
-    .reveal, .paws svg { opacity: 1; transform: none; }
+    .reveal, .paws svg, .stagger > *, .ink .ch { opacity: 1; transform: none; filter: none; }
+    .ink .pen { display: none; }
     .float-layer { display: none; }
   }
 </style>
@@ -400,8 +435,8 @@
     <p class="h2-sub reveal" data-delay="1">소중한 분들을 초대합니다</p>
     <div class="card reveal" data-delay="2">
       <img class="otter-peek" alt="" aria-hidden="true" data-otter>
-      <div id="greeting"></div>
-      <p class="parents" id="parents"></p>
+      <div id="greeting" class="ink"></div>
+      <p class="parents ink" id="parents"></p>
     </div>
   </section>
 
@@ -410,7 +445,7 @@
     <h2 class="reveal">D-DAY</h2>
     <p class="h2-sub reveal" data-delay="1" id="calTitle"></p>
     <div class="calendar reveal" data-delay="2">
-      <div class="cal-grid" id="calGrid"></div>
+      <div class="cal-grid stagger" id="calGrid"></div>
       <p class="cal-time" id="calTime"></p>
     </div>
     <div class="dday reveal" data-delay="3"><img class="otter-dday" alt="" aria-hidden="true" data-otter><strong id="ddayNum"></strong><span id="ddayText"></span></div>
@@ -427,19 +462,19 @@
   <section class="info">
     <h2 class="reveal">LOCATION</h2>
     <p class="h2-sub reveal" data-delay="1">오시는 길</p>
-    <dl class="reveal" data-delay="2">
+    <dl class="stagger">
       <dt>일시</dt><dd id="infoDate"></dd>
       <dt>장소</dt><dd id="infoPlace"></dd>
       <dt>주소</dt><dd id="infoAddress"></dd>
     </dl>
-    <div class="map-btns reveal" data-delay="3" id="mapBtns"></div>
+    <div class="map-btns stagger" id="mapBtns"></div>
   </section>
 
   <div class="paws" aria-hidden="true"></div>
   <section class="notice">
     <h2 class="reveal">NOTICE</h2>
     <p class="h2-sub reveal" data-delay="1">안내사항</p>
-    <ul class="notice-list reveal" data-delay="2" id="notices"></ul>
+    <ul class="notice-list stagger" id="notices"></ul>
   </section>
 
   <div class="paws" aria-hidden="true"></div>
@@ -447,7 +482,7 @@
     <h2 class="reveal">RSVP</h2>
     <p class="h2-sub reveal" data-delay="1">참석 여부를 알려주세요</p>
     <p class="muted reveal" data-delay="2" style="margin-bottom:24px">식사 준비를 위해 참석 여부를 미리 알려주시면 감사하겠습니다.</p>
-    <form class="form reveal" data-delay="3" id="rsvpForm" autocomplete="off">
+    <form class="form stagger" id="rsvpForm" autocomplete="off">
       <input type="text" name="name" placeholder="성함" maxlength="30" required>
       <div class="seg">
         <label><input type="radio" name="attending" value="yes" checked><span>참석할게요 🎉</span></label>
@@ -467,7 +502,7 @@
   <section class="guestbook" id="guestbookSection">
     <h2 class="reveal">GUESTBOOK</h2>
     <p class="h2-sub reveal" data-delay="1">축하의 한마디</p>
-    <form class="form reveal" data-delay="2" id="gbForm" autocomplete="off">
+    <form class="form stagger" id="gbForm" autocomplete="off">
       <input type="text" name="name" placeholder="이름" maxlength="20" required>
       <textarea name="message" placeholder="지우에게 축하 메시지를 남겨주세요" maxlength="200" required></textarea>
       <input class="hp" type="text" name="website" tabindex="-1" aria-hidden="true">
@@ -481,7 +516,7 @@
   <section class="contact">
     <h2 class="reveal">CONTACT</h2>
     <p class="h2-sub reveal" data-delay="1">연락하기</p>
-    <ul class="contact-list reveal" data-delay="2" id="contacts"></ul>
+    <ul class="contact-list stagger" id="contacts"></ul>
   </section>
 
   <section class="share">
@@ -605,14 +640,58 @@ const REDUCED = matchMedia("(prefers-reduced-motion: reduce)").matches;
   layer.innerHTML = html;
 })();
 
-/* ---------- 스크롤 등장 (.reveal, .paws) ---------- */
+/* ---------- 스크롤 등장 (.reveal, .paws, .stagger) ---------- */
 (function reveal() {
-  const els = document.querySelectorAll(".reveal, .paws");
+  document.querySelectorAll(".stagger").forEach((c) => {
+    [...c.children].forEach((el, i) => el.style.setProperty("--i", i));
+  });
+  // 손글씨: 글자를 span으로 쪼개고 순서(--i) 부여. <br>은 유지.
+  const inks = document.querySelectorAll(".ink");
+  let inkOffset = 0;
+  inks.forEach((box) => {
+    const walk = (node) => {
+      if (node.nodeType === 3) {
+        const frag = document.createDocumentFragment();
+        for (const ch of node.textContent) {
+          const sp = document.createElement("span");
+          sp.className = "ch" + (ch === " " ? " sp" : ""); sp.textContent = ch;
+          sp.style.setProperty("--i", inkOffset++);
+          frag.appendChild(sp);
+        }
+        node.replaceWith(frag);
+      } else if (node.nodeType === 1 && node.tagName !== "BR") { [...node.childNodes].forEach(walk); }
+    };
+    [...box.childNodes].forEach(walk);
+    const pen = document.createElement("span"); pen.className = "pen"; box.appendChild(pen);
+  });
+  const els = document.querySelectorAll(".reveal, .paws, .stagger, .ink");
   if (REDUCED || !("IntersectionObserver" in window)) { els.forEach((e) => e.classList.add("in")); return; }
   const io = new IntersectionObserver((entries) => {
-    entries.forEach((en) => { if (en.isIntersecting) { en.target.classList.add("in"); io.unobserve(en.target); } });
-  }, { threshold: 0.15, rootMargin: "0px 0px -40px 0px" });
+    entries.forEach((en) => {
+      if (!en.isIntersecting) return;
+      en.target.classList.add("in"); io.unobserve(en.target);
+      if (en.target.classList.contains("ink")) {
+        const n = en.target.querySelectorAll(".ch").length, first = +en.target.querySelector(".ch")?.style.getPropertyValue("--i") || 0;
+        setTimeout(() => en.target.classList.add("done"), (first + n) * 38 + 600);
+      }
+    });
+  }, { threshold: 0.12, rootMargin: "0px 0px -30px 0px" });
   els.forEach((e) => io.observe(e));
+})();
+
+/* ---------- 히어로 패럴랙스: 사진은 천천히, 뒤 하트는 빠르게 밀림 ---------- */
+(function parallax() {
+  if (REDUCED) return;
+  const stage = document.querySelector(".photo-stage");
+  const hearts = document.querySelectorAll(".bg-heart");
+  let ticking = false;
+  function update() {
+    const y = Math.min(window.scrollY, 900);
+    stage.style.translate = `0 ${y * -0.06}px`;
+    hearts.forEach((h, i) => { h.style.translate = `0 ${y * (0.12 + i * 0.05)}px`; });
+    ticking = false;
+  }
+  window.addEventListener("scroll", () => { if (!ticking) { ticking = true; requestAnimationFrame(update); } }, { passive: true });
 })();
 
 /* ---------- D-day 달력 + 카운트업 ---------- */
