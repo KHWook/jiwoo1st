@@ -4,3 +4,4 @@
 !.env.example
 .aws-sam/
 infra/node_modules/
+.claude/
