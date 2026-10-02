@@ -152,7 +152,7 @@
     animation: popIn .6s 1.2s cubic-bezier(.34,1.56,.64,1) both, nudge 1.6s 1.8s ease-in-out infinite;
     transition: opacity .3s, transform .3s;
   }
-  .tap-hint::before { content: "👆"; font-size: 12px; }
+  .tap-hint svg { width: 14px; height: 14px; }
   @keyframes nudge { 0%,100% { translate: 0 0; } 50% { translate: 0 -5px; } }
   .num-wrap.tapped .tap-hint { opacity: 0; transform: scale(.6); animation: none; }
   /* 히어로 뒤편 흐린 큰 하트 */
@@ -511,7 +511,7 @@
     <div class="num-wrap" id="numWrap" role="button" tabindex="0" aria-label="축하 색종이 터뜨리기">
       <span class="sparkle n1"></span><span class="sparkle n2"></span><span class="sparkle n3"></span><span class="sparkle n4"></span>
       <div class="num">1</div>
-      <span class="tap-hint" aria-hidden="true">tap!</span>
+      <span class="tap-hint" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="#8c6243" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11.5V5.2a1.7 1.7 0 0 1 3.4 0V11m0-1.6a1.6 1.6 0 0 1 3.2 0v2m0-.8a1.6 1.6 0 0 1 3.2 0V16a5.5 5.5 0 0 1-5.5 5.5h-1.6a5 5 0 0 1-4.2-2.3L5 14.6a1.6 1.6 0 0 1 2.6-1.8L9 14.2" fill="#fff"/><path d="M6.5 4.5 5 3m9 1.5L15.5 3M10.7 2.2V1" stroke="#f59bb0"/></svg>tap!</span>
     </div>
     <div class="photo-stage">
       <span class="ground"></span>
