@@ -1052,12 +1052,14 @@ const REDUCED = matchMedia("(prefers-reduced-motion: reduce)").matches;
   function sync() {
     const idx = current();
     dots.forEach((d, i) => d.classList.toggle("on", i === idx));
-    prev.disabled = idx <= 0; next.disabled = idx >= wraps.length - 1;
     wraps.forEach((w, i) => { if (i !== idx) { const v = w.querySelector("video"); if (!v.paused) v.pause(); } });
   }
   let t = null;
   slider.addEventListener("scroll", () => { if (!t) t = requestAnimationFrame(() => { t = null; sync(); }); }, { passive: true });
-  const go = (d) => slider.scrollTo({ left: (current() + d) * slider.clientWidth, behavior: REDUCED ? "auto" : "smooth" });
+  const go = (d) => {
+    const n = wraps.length, idx = (current() + d + n) % n;   // 끝에서 넘기면 처음으로
+    slider.scrollTo({ left: idx * slider.clientWidth, behavior: REDUCED ? "auto" : "smooth" });
+  };
   prev.addEventListener("click", () => go(-1));
   next.addEventListener("click", () => go(1));
   sync();
