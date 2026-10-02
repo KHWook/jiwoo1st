@@ -130,30 +130,30 @@
   .num-wrap.pop .num { animation: happyJump .6s cubic-bezier(.34,1.56,.64,1); }
   @keyframes happyJump { 0% { transform: scale(1); } 40% { transform: scale(1.15) translateY(-10px); } 100% { transform: scale(1); } }
 
-  /* 지우 사진: 둥실 떠 있는 프레임 + 반짝이/물방울 */
-  .photo-stage { position: relative; margin: 20px auto 0; width: 100%; max-width: 340px; animation: popIn 1s .35s cubic-bezier(.34,1.56,.64,1) both; }
+  /* 지우 사진: 배경을 오려낸 컷아웃 + 바닥 그림자 + 반짝이/물방울 */
+  .photo-stage { position: relative; margin: 20px auto 0; width: 100%; max-width: 420px; animation: popIn 1s .35s cubic-bezier(.34,1.56,.64,1) both; }
   .hero-photo {
-    display: block; width: 100%; aspect-ratio: 4 / 5; object-fit: cover;
-    border-radius: 28px; background: var(--line); border: 8px solid #fff;
-    box-shadow: 0 16px 40px rgba(140,98,67,.16);
-    animation: bob 4s ease-in-out infinite; will-change: transform; position: relative; z-index: 2;
+    display: block; width: 100%; height: auto; position: relative; z-index: 2;
+    filter: drop-shadow(0 14px 18px rgba(140,98,67,.18));
+    animation: bob 4s ease-in-out infinite; will-change: transform;
   }
-  @keyframes bob { 0%,100% { transform: translateY(0) rotate(-.6deg); } 50% { transform: translateY(-10px) rotate(.6deg); } }
-  .tape {
-    position: absolute; top: -10px; left: 50%; width: 110px; height: 28px; margin-left: -55px; z-index: 3;
-    background: var(--pink); opacity: .8; border-radius: 4px; transform: rotate(-3deg);
-    background-image: repeating-linear-gradient(90deg, transparent 0 10px, rgba(255,255,255,.35) 10px 14px);
+  @keyframes bob { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-8px); } }
+  .ground {
+    position: absolute; left: 50%; bottom: -6px; width: 78%; height: 26px; translate: -50% 0; z-index: 1;
+    background: radial-gradient(ellipse at center, rgba(159,211,244,.55) 0%, rgba(159,211,244,.25) 45%, transparent 72%);
+    border-radius: 50%; animation: groundPulse 4s ease-in-out infinite;
   }
+  @keyframes groundPulse { 0%,100% { scale: 1 1; opacity: 1; } 50% { scale: .92 .8; opacity: .7; } }
   .drop {
     position: absolute; width: 14px; height: 18px; background: var(--blue);
     border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%; opacity: .85;
     animation: splash 2.4s ease-in-out infinite; pointer-events: none; z-index: 3;
   }
   .drop::after { content: ""; position: absolute; left: 3px; top: 4px; width: 4px; height: 6px; border-radius: 50%; background: rgba(255,255,255,.8); }
-  .drop.d1 { left: -14px; top: 30%; animation-delay: 0s; }
-  .drop.d2 { right: -12px; top: 22%; animation-delay: .8s; transform: scale(.8); }
-  .drop.d3 { left: -6px; top: 72%; animation-delay: 1.5s; transform: scale(.7); }
-  .drop.d4 { right: -16px; top: 64%; animation-delay: .4s; transform: scale(.9); }
+  .drop.d1 { left: 2%; top: 8%; animation-delay: 0s; }
+  .drop.d2 { right: 4%; top: 4%; animation-delay: .8s; transform: scale(.8); }
+  .drop.d3 { left: 10%; top: 84%; animation-delay: 1.5s; transform: scale(.7); }
+  .drop.d4 { right: 2%; top: 60%; animation-delay: .4s; transform: scale(.9); }
   @keyframes splash { 0%, 100% { translate: 0 0; } 50% { translate: 0 -14px; } }
   .sparkle {
     position: absolute; width: 18px; height: 18px; pointer-events: none; z-index: 3;
@@ -161,7 +161,7 @@
     clip-path: polygon(50% 0, 60% 40%, 100% 50%, 60% 60%, 50% 100%, 40% 60%, 0 50%, 40% 40%);
     animation: twinkle 2s ease-in-out infinite; opacity: 0;
   }
-  .sparkle.s1 { left: -22px; top: 6%; } .sparkle.s2 { right: -20px; top: 44%; animation-delay: .7s; } .sparkle.s3 { right: 10%; top: -24px; animation-delay: 1.3s; transform: scale(.7); }
+  .sparkle.s1 { left: 22%; top: -6px; } .sparkle.s2 { right: 18%; top: 10%; animation-delay: .7s; } .sparkle.s3 { right: 30%; top: -18px; animation-delay: 1.3s; transform: scale(.7); }
   @keyframes twinkle { 0%,100% { opacity: 0; scale: .3; rotate: 0deg; } 50% { opacity: 1; scale: 1; rotate: 45deg; } }
 
   /* 수달 캐릭터(작게): 카드 모서리에서 빼꼼 */
@@ -374,7 +374,7 @@
       <span class="tap-hint" aria-hidden="true">tap!</span>
     </div>
     <div class="photo-stage">
-      <span class="tape"></span>
+      <span class="ground"></span>
       <span class="drop d1"></span><span class="drop d2"></span><span class="drop d3"></span><span class="drop d4"></span>
       <span class="sparkle s1"></span><span class="sparkle s2"></span><span class="sparkle s3"></span>
       <img class="hero-photo" id="heroPhoto" alt="">
@@ -509,7 +509,7 @@ const CONFIG = {
     { label: "카카오맵",   url: "https://map.kakao.com/link/search/롯데시티호텔구로" },
     { label: "티맵",       url: "tmap://search?name=롯데시티호텔구로" },
   ],
-  heroPhoto: "images/main.jpg",        // 지우 사진 (4:5 비율 권장)
+  heroPhoto: "images/main.webp",       // 지우 사진 (배경 오려낸 컷아웃, 투명 WebP)
   character: "images/otter.webp",      // 지우 닮은 수달 캐릭터 (작게 여기저기 등장)
   greeting: [
     "지우가 태어나 처음 맞는 생일입니다.",
