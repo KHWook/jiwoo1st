@@ -333,9 +333,8 @@
   .video-arrow svg { width: 14px; height: 14px; }
   .video-arrow:active { transform: scale(.88); }
   .video-arrow:disabled { opacity: .3; cursor: default; }
-  .video-dots { display: flex; justify-content: center; gap: 8px; }
-  .video-dots i { width: 8px; height: 8px; border-radius: 50%; background: var(--line); transition: background .3s, transform .3s; }
-  .video-dots i.on { background: var(--pink); transform: scale(1.3); }
+  .video-count { min-width: 56px; text-align: center; font-family: var(--head); font-size: 15px; color: var(--brown); letter-spacing: .08em; }
+  .video-count b { color: var(--pink); font-weight: 400; }
   .video-hint { text-align: center; font-size: 13px; color: var(--muted); margin-top: 12px; }
 
   /* ---------- 일시/장소 ---------- */
@@ -554,7 +553,7 @@
     <div class="video-slider reveal" data-delay="2" id="videoList"></div>
     <div class="video-nav" id="videoNav">
       <button class="video-arrow" type="button" id="videoPrev" aria-label="이전 영상"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M10 3 5 8l5 5"/></svg></button>
-      <div class="video-dots" id="videoDots" aria-hidden="true"></div>
+      <span class="video-count" id="videoCount" aria-live="polite"></span>
       <button class="video-arrow" type="button" id="videoNext" aria-label="다음 영상"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m6 3 5 5-5 5"/></svg></button>
     </div>
     <p class="video-hint reveal" data-delay="3" id="videoHint">옆으로 넘겨서 다른 영상도 볼 수 있어요</p>
@@ -759,7 +758,7 @@ const REDUCED = matchMedia("(prefers-reduced-motion: reduce)").matches;
         </div>
         ${v.caption ? `<figcaption class="video-caption">${v.caption}</figcaption>` : ""}
       </figure>`).join("");
-    $("videoDots").innerHTML = vids.map((_, i) => `<i${i === 0 ? ' class="on"' : ""}></i>`).join("");
+    $("videoCount").innerHTML = `<b>1</b> / ${vids.length}`;
     if (vids.length < 2) { $("videoNav").classList.add("hidden"); $("videoHint").textContent = "영상을 탭하면 재생돼요"; }
   } else { $("videoSection").classList.add("hidden"); $("videoSection").previousElementSibling.classList.add("hidden"); }
 
@@ -1024,7 +1023,7 @@ const REDUCED = matchMedia("(prefers-reduced-motion: reduce)").matches;
 (function movies() {
   const wraps = [...document.querySelectorAll("[data-video]")];
   if (!wraps.length) return;
-  const slider = document.getElementById("videoList"), dots = [...document.querySelectorAll("#videoDots i")];
+  const slider = document.getElementById("videoList"), countEl = document.getElementById("videoCount");
   const duck = () => document.dispatchEvent(new CustomEvent("bgm:duck", { detail: wraps.some((w) => !w.querySelector("video").paused) }));
   wraps.forEach((wrap) => {
     const video = wrap.querySelector("video");
@@ -1051,7 +1050,7 @@ const REDUCED = matchMedia("(prefers-reduced-motion: reduce)").matches;
   const current = () => Math.round(slider.scrollLeft / slider.clientWidth);
   function sync() {
     const idx = current();
-    dots.forEach((d, i) => d.classList.toggle("on", i === idx));
+    countEl.innerHTML = `<b>${idx + 1}</b> / ${wraps.length}`;
     wraps.forEach((w, i) => { if (i !== idx) { const v = w.querySelector("video"); if (!v.paused) v.pause(); } });
   }
   let t = null;
