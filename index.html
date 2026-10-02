@@ -116,6 +116,17 @@
   .num-wrap .sparkle.n2 { right: 2px; top: 60px; animation-delay: .9s; transform: scale(.75); background: var(--pink); }
   .num-wrap .sparkle.n3 { left: 22px; bottom: 30px; animation-delay: 1.5s; transform: scale(.6); background: var(--blue); }
   .num-wrap .sparkle.n4 { right: 20px; top: 14px; animation-delay: .4s; transform: scale(.5); }
+  .tap-hint {
+    position: absolute; right: -14px; bottom: 22px; display: inline-flex; align-items: center; gap: 3px;
+    padding: 3px 9px; border-radius: 999px; background: #fff; color: var(--pink);
+    font-family: var(--head); font-size: 11px; letter-spacing: .08em; line-height: 1.4;
+    box-shadow: 0 3px 10px rgba(140,98,67,.12); pointer-events: none; white-space: nowrap;
+    animation: popIn .6s 1.2s cubic-bezier(.34,1.56,.64,1) both, nudge 1.6s 1.8s ease-in-out infinite;
+    transition: opacity .3s, transform .3s;
+  }
+  .tap-hint::before { content: "👆"; font-size: 12px; }
+  @keyframes nudge { 0%,100% { translate: 0 0; } 50% { translate: 0 -5px; } }
+  .num-wrap.tapped .tap-hint { opacity: 0; transform: scale(.6); animation: none; }
   .num-wrap.pop .num { animation: happyJump .6s cubic-bezier(.34,1.56,.64,1); }
   @keyframes happyJump { 0% { transform: scale(1); } 40% { transform: scale(1.15) translateY(-10px); } 100% { transform: scale(1); } }
 
@@ -360,6 +371,7 @@
     <div class="num-wrap" id="numWrap" role="button" tabindex="0" aria-label="축하 색종이 터뜨리기">
       <span class="sparkle n1"></span><span class="sparkle n2"></span><span class="sparkle n3"></span><span class="sparkle n4"></span>
       <div class="num">1</div>
+      <span class="tap-hint" aria-hidden="true">tap!</span>
     </div>
     <div class="photo-stage">
       <span class="tape"></span>
@@ -725,7 +737,7 @@ const REDUCED = matchMedia("(prefers-reduced-motion: reduce)").matches;
     raf = pieces.length ? requestAnimationFrame(tick) : (ctx.clearRect(0, 0, innerWidth, innerHeight), null);
   }
   function celebrate() {
-    wrap.classList.remove("pop"); void wrap.offsetWidth; wrap.classList.add("pop");
+    wrap.classList.remove("pop"); void wrap.offsetWidth; wrap.classList.add("pop", "tapped");
     if (REDUCED) return;
     const r = wrap.querySelector(".num").getBoundingClientRect();
     burst(r.left + r.width / 2, r.top + r.height / 2);
