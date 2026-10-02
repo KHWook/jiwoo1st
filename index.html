@@ -291,9 +291,12 @@
     scrollbar-width: none; padding: 6px 4px 10px; margin: 0 -4px;
   }
   .video-slider::-webkit-scrollbar { display: none; }
-  .video-slide { flex: 0 0 100%; scroll-snap-align: center; min-width: 0; container-type: inline-size; overflow: hidden; }
+  .video-slide {
+    flex: 0 0 100%; scroll-snap-align: center; min-width: 0; container-type: inline-size; overflow: hidden;
+    display: flex; flex-direction: column; justify-content: center; align-items: center; height: calc(125cqw + 44px);
+  }
   .video-wrap {
-    position: relative; aspect-ratio: 4 / 5; min-height: 0; display: grid; place-items: center;
+    position: relative; min-height: 0; display: grid; place-items: center; max-width: 100%;
     cursor: pointer; -webkit-tap-highlight-color: transparent;
   }
   .video-wrap .frame { position: relative; max-width: 100%; max-height: 100%; min-height: 0; min-width: 0; display: grid; }
