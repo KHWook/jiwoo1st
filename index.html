@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>지우의 첫 번째 생일에 초대합니다</title>
 <meta property="og:title" content="지우의 첫 번째 생일에 초대합니다">
-<meta property="og:description" content="2026년 10월 25일 일요일 오후 12시 · 롯데시티호텔 구로 3층 씨카페">
+<meta property="og:description" content="2026년 10월 25일 일요일 오후 12시 · 구로 롯데시티호텔 3층 씨카페">
 <meta property="og:image" content="https://khwook.github.io/jiwoo1st/images/og.png">
 <meta property="og:type" content="website">
 <!-- 웹폰트(Jua, Gowun Dodum)는 fonts/ 에 직접 포함. 외부 서버 의존 없이 모든 폰에서 같은 글씨체로 보이게 함. -->
@@ -510,7 +510,7 @@ const CONFIG = {
     iso: "2026-10-25T12:00:00+09:00",   // D-day 계산용 (달력도 이 값으로 그림)
     date: "2026년 10월 25일 일요일",
     time: "오후 12시",
-    place: "롯데시티호텔 구로",
+    place: "구로 롯데시티호텔",
     detail: "3층 씨카페",
     address: "서울특별시 구로구 디지털로 300",
   },
@@ -531,7 +531,7 @@ const CONFIG = {
     "images/04.svg", "images/05.svg", "images/06.svg",
   ],
   notices: [
-    { title: "주차 안내", body: "호텔 주차장을 이용하실 수 있으며, 3시간 무료 주차가 지원됩니다." },
+    { title: "주차 안내", body: "호텔 주차장을 이용하실 수 있으며,<br>3시간 무료주차" },
     { title: "식사 안내", body: "행사 후 뷔페 식사가 준비되어 있습니다." },
     { title: "복장 안내", body: "편안한 복장으로 오셔도 좋습니다." },
   ],
@@ -541,7 +541,7 @@ const CONFIG = {
   ],
   share: {
     title: "지우의 첫 번째 생일에 초대합니다",
-    text: "2026년 10월 25일 일요일 오후 12시 · 롯데시티호텔 구로 3층 씨카페",
+    text: "2026년 10월 25일 일요일 오후 12시 · 구로 롯데시티호텔 3층 씨카페",
     url: "https://khwook.github.io/jiwoo1st/",
   },
   api: {
@@ -559,7 +559,7 @@ const REDUCED = matchMedia("(prefers-reduced-motion: reduce)").matches;
   const { baby, event, parents } = CONFIG;
 
   $("heroName").textContent = `${baby.name}의 첫 번째 생일`;
-  $("heroSub").textContent = `${baby.fullName} · ${baby.birth}생`;
+  $("heroSub").textContent = `${baby.fullName} · ${baby.birth}`;
   $("heroPhoto").src = CONFIG.heroPhoto;
   $("heroPhoto").alt = `${baby.name} 사진`;
   document.querySelectorAll("[data-otter]").forEach((el) => { el.src = CONFIG.character; });
