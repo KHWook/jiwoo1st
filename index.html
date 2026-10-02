@@ -294,6 +294,56 @@
   .gallery-grid.settled .polaroid { transform: rotate(var(--rest)); opacity: 1; }
   .gallery-grid.settled .polaroid:active { transform: rotate(0) scale(1.04); }
 
+  /* ---------- 영상: 좌우 슬라이드 ---------- */
+  .video-slider {
+    display: flex; gap: 14px; overflow-x: auto; scroll-snap-type: x mandatory; -webkit-overflow-scrolling: touch;
+    scrollbar-width: none; padding: 6px 4px 10px; margin: 0 -4px;
+  }
+  .video-slider::-webkit-scrollbar { display: none; }
+  .video-slide { flex: 0 0 100%; scroll-snap-align: center; min-width: 0; container-type: inline-size; overflow: hidden; }
+  .video-wrap {
+    position: relative; aspect-ratio: 4 / 5; min-height: 0; display: grid; place-items: center;
+    cursor: pointer; -webkit-tap-highlight-color: transparent;
+  }
+  .video-wrap .frame { position: relative; max-width: 100%; max-height: 100%; min-height: 0; min-width: 0; display: grid; }
+  .video-wrap video {
+    display: block; width: auto; height: auto; max-width: 100%; max-height: 125cqw; /* 카드(4:5) 높이 */
+    border-radius: 18px; background: var(--bg);
+  }
+  .video-wrap .frame::after {
+    content: "♥"; position: absolute; left: 12px; top: 8px; color: var(--pink); font-size: 18px; animation: heartbeat 2s ease-in-out infinite; pointer-events: none;
+  }
+  .video-wrap .big-play {
+    position: absolute; inset: 0; display: grid; place-items: center; pointer-events: none;
+    background: rgba(255,248,242,.18); border-radius: 18px; transition: opacity .3s;
+  }
+  .video-wrap .big-play span {
+    width: 64px; height: 64px; display: block;
+    filter: drop-shadow(0 6px 14px rgba(140,98,67,.3));
+    animation: playPulse 1.8s ease-in-out infinite;
+  }
+  .video-wrap .big-play svg { width: 100%; height: 100%; display: block; }
+  @keyframes playPulse { 0%,100% { transform: scale(1); } 50% { transform: scale(1.08); } }
+  .video-wrap.playing .big-play { opacity: 0; }
+  .video-wrap .badge {
+    position: absolute; right: 12px; top: 12px; padding: 5px 10px; border-radius: 999px; font-family: var(--head); font-size: 11px;
+    background: rgba(255,255,255,.9); color: var(--brown); pointer-events: none; box-shadow: 0 4px 12px rgba(140,98,67,.15);
+  }
+  .video-caption { text-align: center; font-family: var(--head); font-size: 15px; color: var(--brown); margin-top: 10px; }
+  .video-nav { display: flex; justify-content: center; align-items: center; gap: 18px; margin-top: 6px; }
+  .video-arrow {
+    width: 30px; height: 30px; border-radius: 50%; border: 0; background: var(--pink-soft); color: var(--pink);
+    display: grid; place-items: center; cursor: pointer; -webkit-tap-highlight-color: transparent;
+    transition: transform .15s cubic-bezier(.34,1.56,.64,1), opacity .25s;
+  }
+  .video-arrow svg { width: 14px; height: 14px; }
+  .video-arrow:active { transform: scale(.88); }
+  .video-arrow:disabled { opacity: .3; cursor: default; }
+  .video-dots { display: flex; justify-content: center; gap: 8px; }
+  .video-dots i { width: 8px; height: 8px; border-radius: 50%; background: var(--line); transition: background .3s, transform .3s; }
+  .video-dots i.on { background: var(--pink); transform: scale(1.3); }
+  .video-hint { text-align: center; font-size: 13px; color: var(--muted); margin-top: 12px; }
+
   /* ---------- 일시/장소 ---------- */
   .info dl { display: grid; grid-template-columns: 56px 1fr; gap: 12px 16px; font-size: 15px; background: var(--paper); border-radius: 24px; padding: 24px; box-shadow: 0 10px 30px rgba(140,98,67,.08); }
   .info dt { color: var(--pink); font-family: var(--head); }
@@ -390,6 +440,27 @@
   .tap-heart { position: fixed; pointer-events: none; z-index: 95; color: var(--pink); font-size: 20px; animation: tapHeart .9s ease-out forwards; }
   @keyframes tapHeart { 0% { opacity: 1; transform: translate(-50%, -50%) scale(.4); } 100% { opacity: 0; transform: translate(-50%, -140%) scale(1.3) rotate(var(--r)); } }
 
+  /* ---------- 배경음악 버튼 ---------- */
+  .music-btn {
+    position: fixed; right: 16px; bottom: 20px; z-index: 105; width: 46px; height: 46px; border-radius: 50%; border: 0;
+    background: #fff; color: var(--pink); box-shadow: 0 6px 18px rgba(140,98,67,.18); cursor: pointer;
+    display: grid; place-items: center; font-size: 20px; line-height: 1; -webkit-tap-highlight-color: transparent;
+    transition: transform .15s cubic-bezier(.34,1.56,.64,1), opacity .3s;
+  }
+  .music-btn:active { transform: scale(.9); }
+  .music-btn .note { display: inline-block; }
+  .music-btn.on .note { animation: noteBounce 1.2s ease-in-out infinite; }
+  .music-btn.on::after {
+    content: ""; position: absolute; inset: -4px; border-radius: 50%; border: 2px solid var(--pink); opacity: 0;
+    animation: ringOut 1.6s ease-out infinite;
+  }
+  .music-btn:not(.on) .note { opacity: .5; }
+  .music-btn:not(.on)::before {
+    content: ""; position: absolute; width: 26px; height: 2px; background: var(--pink); rotate: -45deg; border-radius: 2px;
+  }
+  @keyframes noteBounce { 0%,100% { transform: translateY(0) rotate(-8deg); } 50% { transform: translateY(-3px) rotate(8deg); } }
+  @keyframes ringOut { 0% { opacity: .6; transform: scale(1); } 100% { opacity: 0; transform: scale(1.6); } }
+
   .toast {
     position: fixed; left: 50%; bottom: 32px; transform: translateX(-50%) translateY(20px);
     background: rgba(107,74,53,.92); color: #fff; padding: 10px 18px; border-radius: 999px;
@@ -452,7 +523,20 @@
   </section>
 
   <div class="paws" aria-hidden="true"></div>
-  <section class="gallery">
+  <section class="video-section" id="videoSection">
+    <h2 class="reveal">MOVIE</h2>
+    <p class="h2-sub reveal" data-delay="1" id="videoTitle"></p>
+    <div class="video-slider reveal" data-delay="2" id="videoList"></div>
+    <div class="video-nav" id="videoNav">
+      <button class="video-arrow" type="button" id="videoPrev" aria-label="이전 영상"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M10 3 5 8l5 5"/></svg></button>
+      <div class="video-dots" id="videoDots" aria-hidden="true"></div>
+      <button class="video-arrow" type="button" id="videoNext" aria-label="다음 영상"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m6 3 5 5-5 5"/></svg></button>
+    </div>
+    <p class="video-hint reveal" data-delay="3" id="videoHint">옆으로 넘겨서 다른 영상도 볼 수 있어요</p>
+  </section>
+
+  <div class="paws" aria-hidden="true"></div>
+  <section class="gallery" id="gallerySection">
     <h2 class="reveal">GALLERY</h2>
     <p class="h2-sub reveal" data-delay="1">지우의 첫 일 년</p>
     <div class="gallery-grid" id="gallery"></div>
@@ -529,6 +613,7 @@
   </footer>
 </main>
 <canvas id="confetti"></canvas>
+<button class="music-btn hidden" id="musicBtn" type="button" aria-label="배경음악 켜기" aria-pressed="false"><span class="note">♪</span></button>
 <div class="toast" id="toast"></div>
 
 <script>
@@ -561,10 +646,15 @@ const CONFIG = {
     "지난 일 년, 사랑으로 지켜봐 주신 분들께<br>감사한 마음을 전하고자 합니다.<br>오셔서 지우의 첫걸음을 함께 축복해 주세요.",
   ],
   parents: { father: "강현욱", mother: "박은지" },
-  gallery: [
-    "images/01.svg", "images/02.svg", "images/03.svg",
-    "images/04.svg", "images/05.svg", "images/06.svg",
-  ],
+  videos: {
+    // 갤러리 대신 보여줄 영상들. 배열을 비우면 영상 섹션은 숨겨집니다.
+    title: "지우의 첫 일 년",
+    items: [
+      { src: "video/jiwoo.mp4", poster: "video/jiwoo-poster.jpg", caption: "쪽쪽이랑 놀기" },
+      { src: "video/wink.mp4",  poster: "video/wink-poster.jpg",  caption: "윙크 지우" },
+    ],
+  },
+  gallery: [],   // 사진 갤러리. 비워두면 섹션이 숨겨집니다. 예: ["images/01.jpg", "images/02.jpg"]
   notices: [
     { title: "주차 안내", body: "호텔 주차장을 이용하실 수 있으며,<br>3시간 무료주차" },
     { title: "식사 안내", body: "행사 후 뷔페 식사가 준비되어 있습니다." },
@@ -584,6 +674,11 @@ const CONFIG = {
     baseUrl: "https://l4si6b03ie.execute-api.ap-northeast-1.amazonaws.com",
   },
   footer: "지우의 첫 번째 생일",
+  music: {
+    // 배경음악. 비워두면 버튼이 사라집니다. (Liszt - Liebestraum No.3, 오르골 편곡 / GregorQuendel, Pixabay License)
+    src: "audio/bgm.m4a",
+    volume: 0.5,
+  },
 };
 
 const REDUCED = matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -612,6 +707,24 @@ const REDUCED = matchMedia("(prefers-reduced-motion: reduce)").matches;
   $("gallery").innerHTML = CONFIG.gallery
     .map((src, i) => `<figure class="polaroid"><img src="${src}" alt="${baby.name} 사진 ${i + 1}" loading="lazy"></figure>`)
     .join("");
+  if (!CONFIG.gallery.length) { $("gallerySection").classList.add("hidden"); $("gallerySection").previousElementSibling.classList.add("hidden"); }
+  const vids = (CONFIG.videos && CONFIG.videos.items) || [];
+  if (vids.length) {
+    $("videoTitle").textContent = CONFIG.videos.title || `${baby.name}의 영상`;
+    $("videoList").innerHTML = vids.map((v, i) => `
+      <figure class="video-slide">
+        <div class="video-wrap" data-video>
+          <div class="frame">
+          <video playsinline preload="metadata" src="${v.src}"${v.poster ? ` poster="${v.poster}"` : ""}></video>
+          <span class="badge">${i + 1} / ${vids.length}</span>
+          <div class="big-play"><span><svg viewBox="0 0 64 64" aria-hidden="true"><path d="M22 14.5c0-4 4.3-6.4 7.7-4.4l24 14.1c3.4 2 3.4 6.9 0 8.9l-24 14.1c-3.4 2-7.7-.4-7.7-4.4z" fill="#fff" stroke="#fff" stroke-width="6" stroke-linejoin="round"/><path d="M22 14.5c0-4 4.3-6.4 7.7-4.4l24 14.1c3.4 2 3.4 6.9 0 8.9l-24 14.1c-3.4 2-7.7-.4-7.7-4.4z" fill="#fff"/></svg></span></div>
+          </div>
+        </div>
+        ${v.caption ? `<figcaption class="video-caption">${v.caption}</figcaption>` : ""}
+      </figure>`).join("");
+    $("videoDots").innerHTML = vids.map((_, i) => `<i${i === 0 ? ' class="on"' : ""}></i>`).join("");
+    if (vids.length < 2) { $("videoNav").classList.add("hidden"); $("videoHint").textContent = "영상을 탭하면 재생돼요"; }
+  } else { $("videoSection").classList.add("hidden"); $("videoSection").previousElementSibling.classList.add("hidden"); }
 
   $("notices").innerHTML = CONFIG.notices.map((n) => `<li><b>${n.title}</b>${n.body}</li>`).join("");
 
@@ -835,6 +948,89 @@ const REDUCED = matchMedia("(prefers-reduced-motion: reduce)").matches;
   window.addEventListener("resize", resize, { passive: true });
   wrap.addEventListener("click", celebrate);
   wrap.addEventListener("keydown", (e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); celebrate(); } });
+})();
+
+/* ---------- 배경음악: 첫 탭(숫자 1 또는 음표 버튼)에 시작, 버튼으로 끄고 켬 ---------- */
+(function music() {
+  const cfg = CONFIG.music;
+  const btn = document.getElementById("musicBtn");
+  if (!cfg || !cfg.src) return;
+  btn.classList.remove("hidden");
+  const audio = new Audio(cfg.src);
+  audio.loop = true; audio.preload = "none"; audio.volume = 0;
+  const target = Math.min(1, Math.max(0, cfg.volume ?? 0.5));
+  let fadeTimer = null;
+  function fadeTo(v, done) {
+    clearInterval(fadeTimer);
+    fadeTimer = setInterval(() => {
+      const d = v - audio.volume;
+      if (Math.abs(d) < 0.03) { audio.volume = v; clearInterval(fadeTimer); done && done(); return; }
+      audio.volume += Math.sign(d) * 0.03;
+    }, 60);
+  }
+  function setUI(on) {
+    btn.classList.toggle("on", on);
+    btn.setAttribute("aria-pressed", String(on));
+    btn.setAttribute("aria-label", on ? "배경음악 끄기" : "배경음악 켜기");
+  }
+  async function play() {
+    try { await audio.play(); setUI(true); fadeTo(target); return true; }
+    catch { setUI(false); return false; }
+  }
+  function pause() { fadeTo(0, () => audio.pause()); setUI(false); }
+  btn.addEventListener("click", () => { if (audio.paused) play(); else pause(); });
+  document.addEventListener("bgm:duck", (e) => { if (!audio.paused) fadeTo(e.detail ? target * 0.15 : target); });
+  // 숫자 1을 처음 탭할 때 함께 시작 (자동재생 제한 때문에 사용자 제스처가 필요)
+  const once = () => { if (audio.paused) play(); };
+  document.getElementById("numWrap").addEventListener("click", once, { once: true });
+  // 탭을 벗어나면 잠시 멈췄다가 돌아오면 이어서
+  document.addEventListener("visibilitychange", () => {
+    if (!btn.classList.contains("on")) return;
+    if (document.hidden) audio.pause(); else audio.play().catch(() => {});
+  });
+})();
+
+/* ---------- 영상: 탭하면 소리와 함께 재생/일시정지, 좌우 슬라이드 ---------- */
+(function movies() {
+  const wraps = [...document.querySelectorAll("[data-video]")];
+  if (!wraps.length) return;
+  const slider = document.getElementById("videoList"), dots = [...document.querySelectorAll("#videoDots i")];
+  const duck = () => document.dispatchEvent(new CustomEvent("bgm:duck", { detail: wraps.some((w) => !w.querySelector("video").paused) }));
+  wraps.forEach((wrap) => {
+    const video = wrap.querySelector("video");
+    const stop = () => { video.pause(); wrap.classList.remove("playing"); duck(); };
+    wrap.addEventListener("click", () => {
+      if (video.paused) {
+        wraps.forEach((w) => { if (w !== wrap) { w.querySelector("video").pause(); w.classList.remove("playing"); } });
+        video.muted = false;
+        video.play().then(() => { wrap.classList.add("playing"); duck(); }).catch(() => {});
+      } else stop();
+    });
+    video.addEventListener("ended", stop);
+    video.addEventListener("pause", () => { wrap.classList.remove("playing"); duck(); });
+  });
+  // 화면에서 벗어나면 멈춤
+  if ("IntersectionObserver" in window) {
+    const io = new IntersectionObserver((en) => {
+      en.forEach((e) => { if (!e.isIntersecting) { const v = e.target.querySelector("video"); if (!v.paused) v.pause(); } });
+    }, { threshold: 0.4 });
+    wraps.forEach((w) => io.observe(w));
+  }
+  // 슬라이드 위치 → 점/화살표 상태, 넘기면 이전 영상은 멈춤
+  const prev = document.getElementById("videoPrev"), next = document.getElementById("videoNext");
+  const current = () => Math.round(slider.scrollLeft / slider.clientWidth);
+  function sync() {
+    const idx = current();
+    dots.forEach((d, i) => d.classList.toggle("on", i === idx));
+    prev.disabled = idx <= 0; next.disabled = idx >= wraps.length - 1;
+    wraps.forEach((w, i) => { if (i !== idx) { const v = w.querySelector("video"); if (!v.paused) v.pause(); } });
+  }
+  let t = null;
+  slider.addEventListener("scroll", () => { if (!t) t = requestAnimationFrame(() => { t = null; sync(); }); }, { passive: true });
+  const go = (d) => slider.scrollTo({ left: (current() + d) * slider.clientWidth, behavior: REDUCED ? "auto" : "smooth" });
+  prev.addEventListener("click", () => go(-1));
+  next.addEventListener("click", () => go(1));
+  sync();
 })();
 
 /* ---------- 어디든 탭하면 작은 하트 ---------- */
