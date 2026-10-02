@@ -437,13 +437,14 @@
     box-shadow: 0 20px 50px rgba(0,0,0,.3); transform: scale(.85); transition: transform .3s cubic-bezier(.34,1.56,.64,1);
   }
   .lightbox.show img { transform: scale(1); }
+  .lightbox.show img { will-change: transform; }
   .lightbox img.drag { transition: none; }
   .lightbox img.out-left  { animation: lbOutLeft .22s ease-in forwards; }
   .lightbox img.out-right { animation: lbOutRight .22s ease-in forwards; }
   .lightbox img.in-left   { animation: lbInLeft .3s cubic-bezier(.22,1,.36,1) forwards; }
   .lightbox img.in-right  { animation: lbInRight .3s cubic-bezier(.22,1,.36,1) forwards; }
-  @keyframes lbOutLeft  { to { transform: translateX(-70px) scale(.92); opacity: 0; } }
-  @keyframes lbOutRight { to { transform: translateX(70px) scale(.92); opacity: 0; } }
+  @keyframes lbOutLeft  { from { transform: translateX(var(--from, 0px)); } to { transform: translateX(calc(var(--from, 0px) - 90px)) scale(.92); opacity: 0; } }
+  @keyframes lbOutRight { from { transform: translateX(var(--from, 0px)); } to { transform: translateX(calc(var(--from, 0px) + 90px)) scale(.92); opacity: 0; } }
   @keyframes lbInLeft   { from { transform: translateX(70px) scale(.92); opacity: 0; } to { transform: none; opacity: 1; } }
   @keyframes lbInRight  { from { transform: translateX(-70px) scale(.92); opacity: 0; } to { transform: none; opacity: 1; } }
   .lightbox .close {
@@ -1070,13 +1071,15 @@ const REDUCED = matchMedia("(prefers-reduced-motion: reduce)").matches;
     if (!dir || REDUCED) { set(i); return; }
     if (busy) return; busy = true;
     const out = dir > 0 ? "out-left" : "out-right", inn = dir > 0 ? "in-left" : "in-right";
+    // 드래그 중이던 위치에서 이어서 흘러나가도록
+    const m = /translateX\((-?[\d.]+)px\)/.exec(img.style.transform); img.style.setProperty("--from", (m ? m[1] : 0) + "px");
     img.classList.remove("drag"); img.style.transform = ""; img.style.opacity = "";
     img.classList.add(out);
     // animationend가 안 올 때(백그라운드 탭 등)를 대비한 타이머 폴백
     let done1 = false, done2 = false;
     const stage2 = () => {
       if (done1) return; done1 = true;
-      img.classList.remove(out); set(i); img.classList.add(inn);
+      img.classList.remove(out); img.style.removeProperty("--from"); set(i); img.classList.add(inn);
       const finish = () => { if (done2) return; done2 = true; img.classList.remove(inn); busy = false; };
       img.addEventListener("animationend", finish, { once: true });
       setTimeout(finish, 400);
@@ -1108,7 +1111,6 @@ const REDUCED = matchMedia("(prefers-reduced-motion: reduce)").matches;
     if (x0 === null) return;
     dx = e.touches[0].clientX - x0;
     img.style.transform = `translateX(${dx}px) rotate(${dx / 40}deg)`;
-    img.style.opacity = String(Math.max(.4, 1 - Math.abs(dx) / 400));
   }, { passive: true });
   box.addEventListener("touchend", () => {
     if (x0 === null) return; x0 = null;
