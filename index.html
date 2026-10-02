@@ -103,7 +103,7 @@
     animation: popIn .8s cubic-bezier(.34,1.56,.64,1) both;
   }
   .hero .num-wrap {
-    position: relative; margin: 28px auto 8px; padding: 10px 40px; width: fit-content; cursor: pointer; -webkit-tap-highlight-color: transparent;
+    position: relative; margin: 24px auto 4px; padding: 6px 36px; width: fit-content; cursor: pointer; -webkit-tap-highlight-color: transparent;
     animation: popIn .9s .15s cubic-bezier(.34,1.56,.64,1) both;
   }
   .hero .num {
@@ -113,26 +113,11 @@
     animation: wobble 3s ease-in-out infinite;
   }
   @keyframes wobble { 0%,100% { transform: rotate(-3deg); } 50% { transform: rotate(3deg); } }
-  /* 숫자 1 주변 장식: 뒤쪽 파스텔 블롭 + 빙글 도는 하트/별 */
-  .blob {
-    position: absolute; left: 50%; top: 50%; width: 170px; height: 170px; z-index: -1;
-    translate: -50% -50%; background: radial-gradient(circle, var(--pink-soft) 0 55%, transparent 72%);
-    border-radius: 46% 54% 52% 48% / 55% 45% 55% 45%;
-    animation: blobMorph 7s ease-in-out infinite;
-  }
-  .blob.b2 { width: 130px; height: 130px; translate: -30% -62%; background: radial-gradient(circle, var(--blue-soft) 0 55%, transparent 72%); animation-delay: -3s; }
-  @keyframes blobMorph {
-    0%,100% { border-radius: 46% 54% 52% 48% / 55% 45% 55% 45%; rotate: 0deg; }
-    50% { border-radius: 54% 46% 48% 52% / 45% 55% 45% 55%; rotate: 20deg; }
-  }
-  .orbit { position: absolute; left: 50%; top: 50%; width: 0; height: 0; pointer-events: none; animation: spin var(--t, 12s) linear infinite; }
-  .orbit.rev { animation-direction: reverse; }
-  @keyframes spin { to { rotate: 360deg; } }
-  .orbit i {
-    position: absolute; left: 0; top: 0; font-style: normal; font-size: var(--fs, 16px); line-height: 1;
-    translate: -50% -50%; transform: rotate(var(--a)) translateY(calc(-1 * var(--r)));
-  }
-  .orbit .h { color: var(--pink); } .orbit .s { color: var(--yellow); } .orbit .b { color: var(--blue); }
+  /* 숫자 1 주변: 살짝 깜빡이는 반짝이 */
+  .num-wrap .sparkle.n1 { left: 6px; top: 28px; }
+  .num-wrap .sparkle.n2 { right: 2px; top: 60px; animation-delay: .9s; transform: scale(.75); background: var(--pink); }
+  .num-wrap .sparkle.n3 { left: 22px; bottom: 30px; animation-delay: 1.5s; transform: scale(.6); background: var(--blue); }
+  .num-wrap .sparkle.n4 { right: 20px; top: 14px; animation-delay: .4s; transform: scale(.5); }
   .num-wrap.pop .num { animation: happyJump .6s cubic-bezier(.34,1.56,.64,1); }
   @keyframes happyJump { 0% { transform: scale(1); } 40% { transform: scale(1.15) translateY(-10px); } 100% { transform: scale(1); } }
 
@@ -371,16 +356,7 @@
   <section class="hero">
     <p class="eyebrow">FIRST BIRTHDAY</p>
     <div class="num-wrap" id="numWrap" role="button" tabindex="0" aria-label="축하 색종이 터뜨리기">
-      <span class="blob"></span><span class="blob b2"></span>
-      <div class="orbit" style="--t:14s">
-        <i class="h" style="--a:0deg;--r:96px;--fs:18px">♥</i><i class="s" style="--a:72deg;--r:104px;--fs:14px">★</i>
-        <i class="b" style="--a:144deg;--r:92px;--fs:16px">●</i><i class="h" style="--a:216deg;--r:106px;--fs:13px">♥</i>
-        <i class="s" style="--a:288deg;--r:98px;--fs:17px">✦</i>
-      </div>
-      <div class="orbit rev" style="--t:20s">
-        <i class="b" style="--a:30deg;--r:122px;--fs:11px">●</i><i class="h" style="--a:150deg;--r:126px;--fs:15px">♥</i>
-        <i class="s" style="--a:270deg;--r:120px;--fs:12px">★</i>
-      </div>
+      <span class="sparkle n1"></span><span class="sparkle n2"></span><span class="sparkle n3"></span><span class="sparkle n4"></span>
       <div class="num">1</div>
     </div>
     <div class="photo-stage">
