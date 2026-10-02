@@ -303,8 +303,7 @@
   .seg input { display: none; }
   .seg input:checked + span { color: var(--brown); }
   .seg label:has(input:checked) { border-color: var(--pink); background: var(--pink-soft); }
-  .row { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
-  .row label { font-size: 13px; color: var(--muted); display: grid; gap: 4px; }
+  .form .field { font-size: 13px; color: var(--muted); display: grid; gap: 4px; }
   .hp { position: absolute; left: -9999px; }
   .submit {
     padding: 14px; border-radius: 16px; border: 0; background: var(--pink); color: #fff;
@@ -428,14 +427,9 @@
         <label><input type="radio" name="attending" value="yes" checked><span>참석할게요 🎉</span></label>
         <label><input type="radio" name="attending" value="no"><span>참석이 어려워요 🥲</span></label>
       </div>
-      <div class="row">
-        <label>동반 인원 (본인 포함)
-          <select name="count"><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option></select>
-        </label>
-        <label>식사 여부
-          <select name="meal"><option value="yes">식사해요</option><option value="no">식사 안 해요</option></select>
-        </label>
-      </div>
+      <label class="field">동반 인원 (본인 포함)
+        <select name="count"><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option></select>
+      </label>
       <textarea name="note" placeholder="전하실 말씀이 있다면 적어주세요 (선택)" maxlength="200"></textarea>
       <input class="hp" type="text" name="website" tabindex="-1" aria-hidden="true">
       <button class="submit" type="submit">전송하기</button>
