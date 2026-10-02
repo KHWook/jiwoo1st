@@ -103,7 +103,7 @@
     animation: popIn .8s cubic-bezier(.34,1.56,.64,1) both;
   }
   .hero .num-wrap {
-    position: relative; margin: 20px auto 0; width: fit-content; cursor: pointer; -webkit-tap-highlight-color: transparent;
+    position: relative; margin: 28px auto 8px; padding: 10px 40px; width: fit-content; cursor: pointer; -webkit-tap-highlight-color: transparent;
     animation: popIn .9s .15s cubic-bezier(.34,1.56,.64,1) both;
   }
   .hero .num {
@@ -113,36 +113,30 @@
     animation: wobble 3s ease-in-out infinite;
   }
   @keyframes wobble { 0%,100% { transform: rotate(-3deg); } 50% { transform: rotate(3deg); } }
-  .candle {
-    position: absolute; left: 50%; top: -6px; transform: translateX(-50%);
-    width: 12px; height: 34px;
-    background: repeating-linear-gradient(-45deg, #fff 0 4px, var(--blue) 4px 8px);
-    border-radius: 4px 4px 0 0; box-shadow: 0 2px 0 rgba(0,0,0,.05);
+  /* 숫자 1 주변 장식: 뒤쪽 파스텔 블롭 + 빙글 도는 하트/별 */
+  .blob {
+    position: absolute; left: 50%; top: 50%; width: 170px; height: 170px; z-index: -1;
+    translate: -50% -50%; background: radial-gradient(circle, var(--pink-soft) 0 55%, transparent 72%);
+    border-radius: 46% 54% 52% 48% / 55% 45% 55% 45%;
+    animation: blobMorph 7s ease-in-out infinite;
   }
-  .candle::before { content: ""; position: absolute; left: 50%; top: -6px; width: 2px; height: 7px; background: var(--ink); transform: translateX(-50%); }
-  .flame {
-    position: absolute; left: 50%; top: -28px; width: 16px; height: 24px;
-    background: radial-gradient(ellipse at 50% 70%, #fff8d6 0%, #ffcd4d 45%, #ff8a3d 78%, transparent 100%);
-    border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
-    transform-origin: 50% 100%; transform: translateX(-50%);
-    animation: flicker .5s ease-in-out infinite alternate;
-    transition: opacity .25s, transform .25s;
-    filter: drop-shadow(0 0 8px rgba(255,200,80,.7));
+  .blob.b2 { width: 130px; height: 130px; translate: -30% -62%; background: radial-gradient(circle, var(--blue-soft) 0 55%, transparent 72%); animation-delay: -3s; }
+  @keyframes blobMorph {
+    0%,100% { border-radius: 46% 54% 52% 48% / 55% 45% 55% 45%; rotate: 0deg; }
+    50% { border-radius: 54% 46% 48% 52% / 45% 55% 45% 55%; rotate: 20deg; }
   }
-  @keyframes flicker {
-    from { transform: translateX(-50%) scale(1, 1) rotate(-4deg); }
-    to   { transform: translateX(-50%) scale(.9, 1.12) rotate(4deg); }
+  .orbit { position: absolute; left: 50%; top: 50%; width: 0; height: 0; pointer-events: none; animation: spin var(--t, 12s) linear infinite; }
+  .orbit.rev { animation-direction: reverse; }
+  @keyframes spin { to { rotate: 360deg; } }
+  .orbit i {
+    position: absolute; left: 0; top: 0; font-style: normal; font-size: var(--fs, 16px); line-height: 1;
+    translate: -50% -50%; transform: rotate(var(--a)) translateY(calc(-1 * var(--r)));
+    animation: counterSpin var(--t, 12s) linear infinite; animation-direction: inherit;
   }
-  .smoke { position: absolute; left: 50%; top: -20px; width: 6px; height: 6px; border-radius: 50%; background: rgba(150,140,130,.5); opacity: 0; pointer-events: none; }
-  .num-wrap.out .flame { opacity: 0; transform: translateX(-50%) scale(.2, .2); animation: none; }
-  .num-wrap.out .smoke { animation: rise 1.4s ease-out forwards; }
-  .num-wrap.out .num { animation: happyJump .6s cubic-bezier(.34,1.56,.64,1); }
+  @keyframes counterSpin { to { rotate: -360deg; } }
+  .orbit .h { color: var(--pink); } .orbit .s { color: var(--yellow); } .orbit .b { color: var(--blue); }
+  .num-wrap.pop .num { animation: happyJump .6s cubic-bezier(.34,1.56,.64,1); }
   @keyframes happyJump { 0% { transform: scale(1); } 40% { transform: scale(1.15) translateY(-10px); } 100% { transform: scale(1); } }
-  @keyframes rise {
-    0%   { opacity: .8; transform: translate(-50%, 0) scale(1); }
-    100% { opacity: 0;  transform: translate(-40%, -60px) scale(3); }
-  }
-  .hero .hint { font-size: 13px; color: var(--muted); margin-top: 6px; animation: popIn .8s .3s both; }
 
   /* 지우 사진: 둥실 떠 있는 프레임 + 반짝이/물방울 */
   .photo-stage { position: relative; margin: 20px auto 0; width: 100%; max-width: 340px; animation: popIn 1s .35s cubic-bezier(.34,1.56,.64,1) both; }
@@ -378,11 +372,19 @@
 <main>
   <section class="hero">
     <p class="eyebrow">FIRST BIRTHDAY</p>
-    <div class="num-wrap" id="numWrap" role="button" tabindex="0" aria-label="촛불 끄기">
-      <div class="candle"><div class="flame"></div><div class="smoke"></div></div>
+    <div class="num-wrap" id="numWrap" role="button" tabindex="0" aria-label="축하 색종이 터뜨리기">
+      <span class="blob"></span><span class="blob b2"></span>
+      <div class="orbit" style="--t:14s">
+        <i class="h" style="--a:0deg;--r:96px;--fs:18px">♥</i><i class="s" style="--a:72deg;--r:104px;--fs:14px">★</i>
+        <i class="b" style="--a:144deg;--r:92px;--fs:16px">●</i><i class="h" style="--a:216deg;--r:106px;--fs:13px">♥</i>
+        <i class="s" style="--a:288deg;--r:98px;--fs:17px">✦</i>
+      </div>
+      <div class="orbit rev" style="--t:20s">
+        <i class="b" style="--a:30deg;--r:122px;--fs:11px">●</i><i class="h" style="--a:150deg;--r:126px;--fs:15px">♥</i>
+        <i class="s" style="--a:270deg;--r:120px;--fs:12px">★</i>
+      </div>
       <div class="num">1</div>
     </div>
-    <p class="hint" id="hint">촛불을 탭해서 꺼주세요</p>
     <div class="photo-stage">
       <span class="tape"></span>
       <span class="drop d1"></span><span class="drop d2"></span><span class="drop d3"></span><span class="drop d4"></span>
@@ -697,10 +699,9 @@ const REDUCED = matchMedia("(prefers-reduced-motion: reduce)").matches;
   io.observe(grid);
 })();
 
-/* ---------- 촛불 + 색종이/하트 (canvas, 외부 라이브러리 없음) ---------- */
-(function candle() {
+/* ---------- 숫자 1 탭 → 색종이/하트 (canvas, 외부 라이브러리 없음) ---------- */
+(function celebrateNumber() {
   const wrap = document.getElementById("numWrap");
-  const hint = document.getElementById("hint");
   const canvas = document.getElementById("confetti");
   const ctx = canvas.getContext("2d");
   const COLORS = ["#f59bb0", "#f8d878", "#9fd3f4", "#fbc4d2", "#c9e7f8", "#ffffff"];
@@ -750,19 +751,16 @@ const REDUCED = matchMedia("(prefers-reduced-motion: reduce)").matches;
     }
     raf = pieces.length ? requestAnimationFrame(tick) : (ctx.clearRect(0, 0, innerWidth, innerHeight), null);
   }
-  function toggle() {
-    const out = wrap.classList.toggle("out");
-    wrap.setAttribute("aria-label", out ? "촛불 켜기" : "촛불 끄기");
-    hint.textContent = out ? `생일 축하해, ${CONFIG.baby.name}야 🎉` : "촛불을 탭해서 꺼주세요";
-    if (out && !REDUCED) {
-      const r = wrap.querySelector(".candle").getBoundingClientRect();
-      burst(r.left + r.width / 2, r.top);
-    }
+  function celebrate() {
+    wrap.classList.remove("pop"); void wrap.offsetWidth; wrap.classList.add("pop");
+    if (REDUCED) return;
+    const r = wrap.querySelector(".num").getBoundingClientRect();
+    burst(r.left + r.width / 2, r.top + r.height / 2);
   }
   resize();
   window.addEventListener("resize", resize, { passive: true });
-  wrap.addEventListener("click", toggle);
-  wrap.addEventListener("keydown", (e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); toggle(); } });
+  wrap.addEventListener("click", celebrate);
+  wrap.addEventListener("keydown", (e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); celebrate(); } });
 })();
 
 /* ---------- 어디든 탭하면 작은 하트 ---------- */
