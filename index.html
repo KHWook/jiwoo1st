@@ -214,6 +214,11 @@
     animation: heartbeat 1.8s ease-in-out infinite;
   }
   @keyframes pulse { 0%,100% { box-shadow: 0 0 0 0 rgba(245,155,176,.5); } 60% { box-shadow: 0 0 0 10px rgba(245,155,176,0); } }
+  .cal-time {
+    margin: 16px auto 0; width: fit-content; padding: 8px 18px; border-radius: 999px;
+    background: var(--pink-soft); color: var(--brown); font-family: var(--head); font-size: 15px;
+  }
+  .cal-time b { color: var(--pink); font-weight: 400; font-size: 17px; }
   .dday { text-align: center; margin-top: 28px; }
   .dday strong { font-family: var(--head); font-size: 40px; color: var(--pink); display: block; line-height: 1.2; }
   .dday span { font-size: 14px; color: var(--muted); }
@@ -386,6 +391,7 @@
     <p class="h2-sub reveal" data-delay="1" id="calTitle"></p>
     <div class="calendar reveal" data-delay="2">
       <div class="cal-grid" id="calGrid"></div>
+      <p class="cal-time" id="calTime"></p>
     </div>
     <div class="dday reveal" data-delay="3"><img class="otter-dday" alt="" aria-hidden="true" data-otter><strong id="ddayNum"></strong><span id="ddayText"></span></div>
   </section>
@@ -604,6 +610,7 @@ const REDUCED = matchMedia("(prefers-reduced-motion: reduce)").matches;
     html += `<div class="d${sun ? " sun" : ""}${day === d ? " event" : ""}">${day}</div>`;
   }
   document.getElementById("calGrid").innerHTML = html;
+  document.getElementById("calTime").innerHTML = `${m + 1}월 ${d}일 ${dows[ev.getDay()]}요일 · <b>${CONFIG.event.time}</b>`;
 
   const today = new Date(); today.setHours(0, 0, 0, 0);
   const target = new Date(y, m, d);
